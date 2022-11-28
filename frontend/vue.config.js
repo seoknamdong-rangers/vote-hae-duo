@@ -3,6 +3,7 @@ const path = require("path")
 
 module.exports = defineConfig({
   outputDir: path.resolve("__dirname", "../../src/main/resources/static"),
+
   devServer: {
     proxy: {
       "/": {
@@ -13,5 +14,12 @@ module.exports = defineConfig({
     },
     port: 4000
   },
+
   transpileDependencies: ["vuetify"],
+
+  pluginOptions: {
+    vuetify: {
+			// https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
+		}
+  }
 })
