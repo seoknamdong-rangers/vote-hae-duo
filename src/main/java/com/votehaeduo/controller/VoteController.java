@@ -1,6 +1,6 @@
 package com.votehaeduo.controller;
 
-import com.votehaeduo.dto.request.VoteInsertRequestDto;
+import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
@@ -18,8 +18,8 @@ public class VoteController {
 
     //투표 등록
     @PostMapping
-    public void save(@RequestBody VoteInsertRequestDto voteInsertRequestDto) {
-        voteService.save(voteInsertRequestDto);
+    public void save(@RequestBody VoteSaveRequestDto voteSaveRequestDto) {
+        voteService.save(voteSaveRequestDto);
     }
 
     //투표 전체 조회
