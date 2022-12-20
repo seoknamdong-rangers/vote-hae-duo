@@ -1,6 +1,6 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.request.VoteInsertRequestDto;
+import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
@@ -22,8 +22,8 @@ public class VoteService {
 
     //등록
     @Transactional
-    public void save(VoteInsertRequestDto voteInsertRequestDto) {
-        voteRepository.save(voteInsertRequestDto.toEntity());
+    public void save(VoteSaveRequestDto voteSaveRequestDto) {
+        voteRepository.save(voteSaveRequestDto.toEntity());
     }
 
     //전체조회
