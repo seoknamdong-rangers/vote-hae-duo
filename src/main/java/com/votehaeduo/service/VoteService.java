@@ -21,8 +21,8 @@ public class VoteService {
 
     //등록
     @Transactional
-    public void save(VoteSaveRequestDto voteSaveRequestDto) {
-        voteRepository.save(voteSaveRequestDto.toEntity());
+    public Long save(VoteSaveRequestDto voteSaveRequestDto) {
+        return voteRepository.save(voteSaveRequestDto.toEntity()).getId();
     }
 
     //전체조회
@@ -34,6 +34,7 @@ public class VoteService {
     }
 
     //상세조회
+    @Transactional(readOnly = true)
     public VoteResponseDto findById(Long id) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
         return VoteResponseDto.from(vote);

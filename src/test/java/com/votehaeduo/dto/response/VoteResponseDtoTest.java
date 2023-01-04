@@ -18,6 +18,7 @@ class VoteResponseDtoTest {
     @Test
     @DisplayName("voteResponseDto 생성 테스트")
     void from() {
+
         // given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()

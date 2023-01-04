@@ -1,5 +1,6 @@
 package com.votehaeduo.controller;
 
+import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
@@ -16,6 +17,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,26 +31,43 @@ class VoteControllerTest {
     @MockBean
     private VoteService voteService;
 
-    @Test
-    @DisplayName("투표 생성")
-    void insertVote() {
-
-    }
-
     @BeforeEach
     void setUp() {
         this.mvc = MockMvcBuilders.standaloneSetup(new VoteController(voteService)).build();
     }
 
     @Test
+    @DisplayName("투표 생성")
+    void insertVote() {
+
+        // given
+        VoteSaveRequestDto testVoteSaveRequestDto = VoteSaveRequestDto.builder().build();
+
+        //when
+        voteService.save(testVoteSaveRequestDto);
+
+        //then
+        verify(voteService, times(1)).save(testVoteSaveRequestDto);
+        verify(voteService).save(testVoteSaveRequestDto);
+    }
+
+
+    @Test
     @DisplayName("투표 전체 조회")
     void findAllVote() throws Exception {
+
+        // given
         List<VoteResponseDto> votes = List.of(
-                new VoteResponseDto(1L, "12월 15일 풋살 투표", List.of(new VoteItemResponseDto(1L, "12 ~ 2 실내"), new VoteItemResponseDto(2L, "11 ~ 1 야외"))),
-                new VoteResponseDto(2L, "12월 16일 풋살 투표", List.of(new VoteItemResponseDto(1L, "12 ~ 2 실내"), new VoteItemResponseDto(2L, "11 ~ 1 야외")))
+                new VoteResponseDto(1L, "12월 15일 풋살 투표", List.of(
+                        new VoteItemResponseDto(1L, "12 ~ 2 실내"),
+                        new VoteItemResponseDto(2L, "11 ~ 1 야외"))),
+                new VoteResponseDto(2L, "12월 16일 풋살 투표", List.of(
+                        new VoteItemResponseDto(1L, "12 ~ 2 실내"),
+                        new VoteItemResponseDto(2L, "11 ~ 1 야외")))
         );
         given(voteService.findAll()).willReturn(votes);
 
+        //when & then
         mvc.perform(get("/votes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
