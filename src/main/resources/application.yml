@@ -26,3 +26,8 @@ spring:
         hibernate:
           SQL: DEBUG
           type:
+kakao:
+  api:
+    endpoint: "https://kauth.kakao.com"
+    client-id: "8a7cea0d9087476d8f483c23b9637587"
+    redirect-url: "http://localhost:8080/oauth/redirect"
