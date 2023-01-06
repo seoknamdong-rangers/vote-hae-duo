@@ -1,27 +1,39 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Main from "@/views/Main";
+import Vote from "@/views/Vote";
 import Votes from "@/views/Votes";
+import VoteCreate from "@/views/VoteCreate";
 import Error from "@/views/Error";
 
 const routes = [
   {
     path: "/",
     name: "Main",
-    component: Main
+    component: Main,
   },
   {
     path: "/votes",
     name: "Votes",
-    component: Votes
+    component: Votes,
+  },
+  {
+    path: "/votes/:id(\\d+)",
+    name: "Vote",
+    component: Vote,
+  },
+  {
+    path: "/votes/create",
+    name: "VoteCreate",
+    component: VoteCreate,
   },
   {
     path: "/:catchAll(.*)",
-    redirect: "/404"
+    redirect: "/404",
   },
   {
     path: "/404",
     name: "Error",
-    component: Error
+    component: Error,
   },
 ];
 
