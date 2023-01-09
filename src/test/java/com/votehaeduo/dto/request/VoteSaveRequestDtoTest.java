@@ -14,7 +14,6 @@ class VoteSaveRequestDtoTest {
     @Test
     @DisplayName("VoteSaveRequestDtoTest toEntity 테스트")
     void toEntity() {
-
         // given
         VoteSaveRequestDto voteSaveRequestDto = new VoteSaveRequestDto("12월 28일 풋살 투표",
                 List.of(new VoteItemSaveRequestDto("11시 ~ 1시"),

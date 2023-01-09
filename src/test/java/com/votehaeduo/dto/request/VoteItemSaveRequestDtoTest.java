@@ -12,7 +12,6 @@ class VoteItemSaveRequestDtoTest {
     @Test
     @DisplayName("VoteItemSaveRequestDto toEntity 테스트")
     void toEntity() {
-
         //given
         Vote vote = Vote.builder().build();
         VoteItemSaveRequestDto voteItemSaveRequestDto = VoteItemSaveRequestDto.builder()

@@ -34,7 +34,6 @@ class VoteServiceTest {
     @Test
     @DisplayName("투표 생성")
     void save() {
-
         //given
         VoteSaveRequestDto voteSaveRequestDto = VoteSaveRequestDto.builder()
                 .name("12월 15일 풋살 투표")
@@ -53,17 +52,16 @@ class VoteServiceTest {
         given(voteRepository.save(any())).willReturn(expectedVote);
 
         //when
-        Long testVoteId = voteService.save(voteSaveRequestDto);
+        VoteResponseDto voteResponseDto = voteService.save(voteSaveRequestDto);
 
         //then
         verify(voteRepository, times(1)).save(any());
-        Assertions.assertThat(testVoteId).isEqualTo(expectedVote.getId());
+        Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedVote);
     }
 
     @Test
     @DisplayName("투표 전체 조회")
     void findAll() {
-
         //given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()
