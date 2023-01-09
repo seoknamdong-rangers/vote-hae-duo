@@ -20,7 +20,7 @@ public class Vote {
     private String name;
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "vote")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "vote", cascade = CascadeType.PERSIST)
     private List<VoteItem> voteItems = new ArrayList<>();
 
     public void update(String name) {

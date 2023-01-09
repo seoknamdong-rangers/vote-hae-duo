@@ -1,10 +1,7 @@
 package com.votehaeduo.service;
 
 import com.votehaeduo.dto.request.VoteSaveRequestDto;
-import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
-import com.votehaeduo.entity.Vote;
-import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,8 +18,8 @@ public class VoteService {
 
     //등록
     @Transactional
-    public void save(VoteSaveRequestDto voteSaveRequestDto) {
-        voteRepository.save(voteSaveRequestDto.toEntity());
+    public VoteResponseDto save(VoteSaveRequestDto voteSaveRequestDto) {
+        return VoteResponseDto.from(voteRepository.save(voteSaveRequestDto.toEntity()));
     }
 
     //전체조회
@@ -31,18 +28,6 @@ public class VoteService {
         return voteRepository.findAll().stream()
                 .map(VoteResponseDto::from)
                 .collect(Collectors.toList());
-    }
-
-    //상세조회
-    public VoteResponseDto findById(Long id) {
-        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        return VoteResponseDto.from(vote);
-    }
-
-    //수정
-    public void update(Long id, VoteUpdateRequestDto voteUpdateRequestDto) {
-        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        vote.update(voteUpdateRequestDto.getName());
     }
 
     //삭제

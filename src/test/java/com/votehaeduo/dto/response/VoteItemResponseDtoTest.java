@@ -16,13 +16,14 @@ class VoteItemResponseDtoTest {
     @Test
     @DisplayName("voteItemResponseDto 테스트")
     void from() {
-        Long id = new Random().nextLong();
         //given
+        Long id = new Random().nextLong();
         VoteItem voteItems = VoteItem.builder()
                         .id(id)
                         .name("item_name1")
                         .build();
         VoteItemResponseDto expected = new VoteItemResponseDto(id, "item_name1");
+
         //when
         VoteItemResponseDto result = VoteItemResponseDto.from(voteItems);
 
