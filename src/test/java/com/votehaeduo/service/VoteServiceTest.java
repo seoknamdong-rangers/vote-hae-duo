@@ -1,5 +1,7 @@
 package com.votehaeduo.service;
 
+import com.votehaeduo.dto.request.VoteItemUpdateRequestDto;
+import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
@@ -14,8 +16,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,10 +74,44 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 수정")
     void update() {
+        //given
+        Vote vote = Vote.builder()
+                .id(1L)
+                .name("12월 15일 풋살 투표")
+                .build();
+        List<VoteItem> voteItems = List.of(VoteItem.builder()
+                        .id(1L)
+                        .name("12 ~ 2 실내")
+                        .vote(vote)
+                        .build(),
+                VoteItem.builder()
+                        .id(2L)
+                        .name("11 ~ 1 야외")
+                        .vote(vote)
+                        .build());
+        vote.addItems(voteItems);
+        given(voteRepository.findById(any())).willReturn(Optional.of(vote));
+        VoteResponseDto expectedResult = new VoteResponseDto(1L, "1월 15일 풋살 투표",
+                List.of(new VoteItemResponseDto(1L, "11시 ~ 1시 실외"),
+                        new VoteItemResponseDto(2L, "12시 ~ 2시 실내")));
+        voteRepository.save(vote);
+
+        //when
+        VoteResponseDto voteResponseDto = voteService.update(1L, VoteUpdateRequestDto.builder()
+                .name("1월 15일 풋살 투표")
+                .voteItems(List.of(
+                        VoteItemUpdateRequestDto.builder().id(1L).name("11시 ~ 1시 실외").build(),
+                        VoteItemUpdateRequestDto.builder().id(2L).name("12시 ~ 2시 실내").build()))
+                .build());
+
+        //then
+        Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test
     void delete() {
     }
+
 }
