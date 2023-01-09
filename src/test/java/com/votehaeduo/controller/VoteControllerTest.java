@@ -40,7 +40,7 @@ class VoteControllerTest {
     }
 
     @Test
-    @DisplayName("투표 생성")
+    @DisplayName("투표 등록")
     void insertVote() throws Exception {
         // given
         VoteResponseDto expectedVoteResponseDto = new VoteResponseDto(

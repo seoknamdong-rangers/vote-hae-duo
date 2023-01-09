@@ -1,5 +1,7 @@
 package com.votehaeduo.service;
 
+import com.votehaeduo.dto.request.VoteItemSaveRequestDto;
+import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
@@ -16,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Random;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +31,38 @@ class VoteServiceTest {
     private VoteService voteService;
 
     @Test
+    @DisplayName("투표 등록")
     void save() {
+        //given
+        Vote vote = Vote.builder()
+                .id(1L)
+                .name("1월 9일 풋살 투표")
+                .build();
+        List<VoteItem> voteItems = List.of(VoteItem.builder()
+                        .id(1L)
+                        .name("11시 ~ 1시 실외")
+                        .vote(vote)
+                        .build(),
+                VoteItem.builder()
+                        .id(2L)
+                        .name("12시 ~ 2시 실내")
+                        .vote(vote)
+                        .build());
+        vote.addItems(voteItems);
+        VoteResponseDto expectedResult = VoteResponseDto.from(vote);
+        given(voteRepository.save(any())).willReturn(vote);
+
+        //when
+        VoteResponseDto voteResponseDto = voteService.save(VoteSaveRequestDto.builder()
+                .name("1월 9일 풋살 투표")
+                .voteItems(List.of(
+                        VoteItemSaveRequestDto.builder().name("11시 ~ 1시 실외").build(),
+                        VoteItemSaveRequestDto.builder().name("12시 ~ 2시 실내").build())
+                ).build());
+
+        //then
+        Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
+
     }
 
     @Test
