@@ -1,7 +1,5 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.request.VoteSaveRequestDto;
-import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
@@ -19,12 +17,6 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
 
-    //등록
-    @Transactional
-    public void save(VoteSaveRequestDto voteSaveRequestDto) {
-        voteRepository.save(voteSaveRequestDto.toEntity());
-    }
-
     //전체조회
     @Transactional(readOnly = true)
     public List<VoteResponseDto> findAll() {
@@ -34,15 +26,10 @@ public class VoteService {
     }
 
     //상세조회
+    @Transactional()
     public VoteResponseDto findById(Long id) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
         return VoteResponseDto.from(vote);
-    }
-
-    //수정
-    public void update(Long id, VoteUpdateRequestDto voteUpdateRequestDto) {
-        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        vote.update(voteUpdateRequestDto.getName());
     }
 
     //삭제

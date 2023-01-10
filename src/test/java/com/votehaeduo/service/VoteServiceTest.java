@@ -14,8 +14,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -66,7 +69,33 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 상세 조회")
     void findById() {
+        //given
+        Long id = new Random().nextLong();
+        Vote vote = Vote.builder()
+                .id(id)
+                .name("1월 10일 풋살")
+                .build();
+        List<VoteItem> voteItems = List.of(VoteItem.builder()
+                        .id(1L)
+                        .name("12 ~ 2 실내")
+                        .vote(vote)
+                        .build(),
+                VoteItem.builder()
+                        .id(2L)
+                        .name("11 ~ 1 야외")
+                        .vote(vote)
+                        .build());
+        vote.addItems(voteItems);
+        VoteResponseDto expectedResult = new VoteResponseDto(id, "1월 10일 풋살", List.of(new VoteItemResponseDto(1L, "12 ~ 2 실내"), new VoteItemResponseDto(2L, "11 ~ 1 야외")));
+        given(voteRepository.findById(any())).willReturn(Optional.of(vote));
+
+        //when
+        VoteResponseDto result = voteService.findById(id);
+
+        //then
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test

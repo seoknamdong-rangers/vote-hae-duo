@@ -15,11 +15,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest
+@WebMvcTest(VoteController.class)
 class VoteControllerTest {
 
     @Autowired
@@ -67,7 +68,21 @@ class VoteControllerTest {
 
     @Test
     @DisplayName("투표 상세 조회")
-    void findByIdVote() {
+    void findByIdVote() throws Exception {
+        //given
+        given(voteService.findById(any())).willReturn(new VoteResponseDto(1L, "1월 10일 풋살",
+                List.of(new VoteItemResponseDto(1L, "11시 ~ 1시 실외"),
+                        new VoteItemResponseDto(2L, "12시 ~ 2시 실내"))));
+        //when & then
+        mvc.perform(get("/api/votes/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.name").value("1월 10일 풋살"))
+                .andExpect(jsonPath("$.voteItems.[0].id").value(1))
+                .andExpect(jsonPath("$.voteItems.[0].name").value("11시 ~ 1시 실외"))
+                .andExpect(jsonPath("$.voteItems.[1].id").value(2))
+                .andExpect(jsonPath("$.voteItems.[1].name").value("12시 ~ 2시 실내"));
     }
 
     @Test
