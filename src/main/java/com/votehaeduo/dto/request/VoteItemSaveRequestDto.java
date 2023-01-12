@@ -11,11 +11,11 @@ import lombok.*;
 @AllArgsConstructor
 public class VoteItemSaveRequestDto {
 
-    private String name;
+    private String title;
 
     public VoteItem toEntity(Vote vote) {
         return VoteItem.builder()
-                .name(name)
+                .title(title)
                 .vote(vote)
                 .build();
     }

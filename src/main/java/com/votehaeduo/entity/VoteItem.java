@@ -3,6 +3,7 @@ package com.votehaeduo.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Getter
 @Entity
@@ -19,6 +20,10 @@ public class VoteItem {
     @JoinColumn(name = "vote_id")
     private Vote vote;
 
-    private String name;
+    private String title;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @Column(name = "member_id")
+    private Set<Long> memberIds;
 
 }

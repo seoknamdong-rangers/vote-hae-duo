@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 public class VoteItemResponseDto {
 
     private Long id;
-    private String name;
+    private String title;
 
     public static VoteItemResponseDto from(VoteItem voteItem) {
         return new VoteItemResponseDto(
                 voteItem.getId(),
-                voteItem.getName()
+                voteItem.getTitle()
         );
     }
 

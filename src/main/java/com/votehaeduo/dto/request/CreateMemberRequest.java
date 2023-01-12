@@ -4,6 +4,7 @@ import com.votehaeduo.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -22,11 +23,15 @@ public class CreateMemberRequest {
     @Email
     private final String email;
 
+    @URL
+    private final String profileUrl;
+
     public Member toEntity() {
         return Member.builder()
                 .kakaoMemberNo(kakaoMemberNo)
                 .nickname(nickname)
                 .email(email)
+                .profileUrl(profileUrl)
                 .build();
     }
 

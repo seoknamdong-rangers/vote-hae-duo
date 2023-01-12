@@ -2,7 +2,10 @@ package com.votehaeduo.dto.request;
 
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,12 +16,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class VoteSaveRequestDto {
 
-    private String name;
+    private String title;
     private List<VoteItemSaveRequestDto> voteItems;
 
     public Vote toEntity() {
         Vote vote = Vote.builder()
-                .name(name)
+                .title(title)
                 .build();
         List<VoteItem> items = voteItems.stream()
                 .map(voteItemSaveRequestDto -> voteItemSaveRequestDto.toEntity(vote))
