@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main>
+    <v-main class="bg-grey-lighten-2">
       <v-card max-width="448" class="mx-auto" flat>
         <v-layout>
           <v-app-bar color="teal-darken-4" class="fixed-bar">
@@ -43,8 +43,8 @@
           </v-app-bar>
           <router-view/>
         </v-layout>
+        <Footer/>
       </v-card>
-      <Footer/>
     </v-main>
   </v-app>
 </template>
