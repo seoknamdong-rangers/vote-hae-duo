@@ -17,7 +17,12 @@
                 >
               </router-link>
             </v-app-bar-title>
-            {{ member.nickname }}님
+            {{ member.nickname }} 님
+            <v-avatar class="ml-2" size="24">
+              <v-img
+                  :src="member.profileUrl"
+              ></v-img>
+            </v-avatar>
             <v-menu location="bottom">
               <template v-slot:activator="{ props }">
                 <v-btn v-bind="props">
@@ -57,11 +62,13 @@ export default {
   name: "App",
   components: {Footer},
   created() {
-    this.setMemberFromLocalStorage();
+    let urlParams = new URLSearchParams(window.location.search);
+    if (!urlParams.has('token')) {
     this.loginKakao();
+    }
     this.$watch(
         () => this.$route.query.token,
-        (toParams) => this.setMemberFromToken(toParams)
+        (toParams) => this.setMemberFromTokenUrl(toParams)
     );
   },
   computed: {
@@ -71,13 +78,11 @@ export default {
   },
   methods: {
     ...mapActions([
-      "setMemberFromLocalStorage",
       "loginKakao",
-      "setMemberFromToken",
+      "setMemberFromTokenUrl",
     ]),
   },
   data: () => ({
-    drawer: true,
     menus: [
       {
         path: "/votes/create",

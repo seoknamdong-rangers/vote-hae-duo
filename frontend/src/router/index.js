@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Main from "@/views/Main";
-import Vote from "@/views/Vote";
+import VoteDetail from "@/views/VoteDetail.vue";
 import Votes from "@/views/Votes";
-import VoteCreate from "@/views/VoteCreate";
+// import VoteCreate from "@/views/VoteCreate";
 import Error from "@/views/Error";
 
 const routes = [
@@ -18,14 +18,14 @@ const routes = [
   },
   {
     path: "/votes/:id(\\d+)",
-    name: "Vote",
-    component: Vote,
+    name: "VoteDetail",
+    component: VoteDetail,
   },
-  {
-    path: "/votes/create",
-    name: "VoteCreate",
-    component: VoteCreate,
-  },
+  // {
+  //   path: "/votes/create",
+  //   name: "VoteCreate",
+  //   component: VoteCreate,
+  // },
   {
     path: "/:catchAll(.*)",
     redirect: "/404",

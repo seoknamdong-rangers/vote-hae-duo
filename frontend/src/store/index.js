@@ -9,6 +9,7 @@ export default createStore({
       kakaoMemberNo: "",
       nickname: "",
       email: "",
+      profileUrl: "",
     },
   },
   getters: {
@@ -19,32 +20,26 @@ export default createStore({
   mutations: {
     setMember(state, member) {
       state.member = member;
-      console.log(state.member);
     },
   },
   actions: {
-    setMemberFromLocalStorage(context) {
+    loginKakao(context) {
       const member = JSON.parse(localStorage.getItem("member"));
-      console.log(member);
       if (member) {
         context.commit("setMember", member);
-      }
-    },
-    loginKakao(context) {
-      const member = context.state.member;
-      if (member.id < 1) {
+      } else {
         location.href = "/oauth/authorize";
       }
     },
-    setMemberFromToken(context, token) {
+    setMemberFromTokenUrl(context, token) {
       const member = context.state.member;
-      if (member.id < 1) {
+      if (member.id < 1 && token) {
         // eslint-disable-next-line no-undef
         const member = JSON.parse(Base64.decode(token));
         const createMemberRequest = {
           kakaoMemberNo: member.sub,
           nickname: member.nickname,
-          email: member.email,
+          profileUrl: member.picture,
         };
         axios
           .post("/api/members", createMemberRequest)
