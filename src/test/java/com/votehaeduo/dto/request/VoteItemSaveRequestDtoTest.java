@@ -15,7 +15,7 @@ class VoteItemSaveRequestDtoTest {
         //given
         Vote vote = Vote.builder().build();
         VoteItemSaveRequestDto voteItemSaveRequestDto = VoteItemSaveRequestDto.builder()
-                .name("9시 ~ 11시")
+                .title("9시 ~ 11시")
                 .build();
         VoteItem expected = VoteItem.builder()
                 .name("9시 ~ 11시")

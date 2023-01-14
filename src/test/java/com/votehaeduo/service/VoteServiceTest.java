@@ -54,10 +54,10 @@ class VoteServiceTest {
 
         //when
         VoteResponseDto voteResponseDto = voteService.save(VoteSaveRequestDto.builder()
-                .name("1월 9일 풋살 투표")
+                .title("1월 9일 풋살 투표")
                 .voteItems(List.of(
-                        VoteItemSaveRequestDto.builder().name("11시 ~ 1시 실외").build(),
-                        VoteItemSaveRequestDto.builder().name("12시 ~ 2시 실내").build())
+                        VoteItemSaveRequestDto.builder().title("11시 ~ 1시 실외").build(),
+                        VoteItemSaveRequestDto.builder().title("12시 ~ 2시 실내").build())
                 ).build());
 
         //then
