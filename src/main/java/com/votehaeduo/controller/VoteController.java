@@ -1,6 +1,7 @@
 package com.votehaeduo.controller;
 
 import com.votehaeduo.dto.request.VoteSaveRequestDto;
+import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,19 @@ public class VoteController {
     @GetMapping
     public List<VoteResponseDto> findAll() { //페이지를 리턴 하는게 맞음
         return voteService.findAll();
+    }
+
+    //투표 상세 조회
+    @GetMapping("/{voteId}")
+    public VoteResponseDto findById(@PathVariable("voteId") Long id) {
+        return voteService.findById(id);
+    }
+
+    //투표 수정
+    @PutMapping("/{voteId}")
+    public VoteResponseDto update(@PathVariable("voteId") Long id,
+                                  @RequestBody VoteUpdateRequestDto voteUpdateRequestDto) {
+        return voteService.update(id, voteUpdateRequestDto);
     }
 
     //투표 삭제
