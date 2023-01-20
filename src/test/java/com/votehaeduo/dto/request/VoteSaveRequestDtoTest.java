@@ -31,10 +31,10 @@ class VoteSaveRequestDtoTest {
                         .build());
         expected.addItems(voteItems);
 
-        //when
+        // when
         Vote result = voteSaveRequestDto.toEntity();
 
-        //then
+        // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 

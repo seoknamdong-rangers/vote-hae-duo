@@ -12,7 +12,7 @@ class VoteItemUpdateRequestDtoTest {
     @Test
     @DisplayName("VoteItemUpdateRequestDto toEntity 테스트")
     void toEntity() {
-        //given
+        // given
         Vote vote = Vote.builder().build();
         VoteItemUpdateRequestDto voteItemUpdateRequestDto = VoteItemUpdateRequestDto.builder()
                 .id(1L)
@@ -24,10 +24,10 @@ class VoteItemUpdateRequestDtoTest {
                 .vote(vote)
                 .build();
 
-        //when
+        // when
         VoteItem result = voteItemUpdateRequestDto.toEntity(vote);
 
-        //then
+        // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 

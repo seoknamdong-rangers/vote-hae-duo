@@ -38,7 +38,7 @@ class VoteServiceTest {
     @Test
     @DisplayName("투표 등록")
     void save() {
-        //given
+        // given
         Vote vote = Vote.builder()
                 .id(1L)
                 .title("1월 9일 풋살 투표")
@@ -57,7 +57,7 @@ class VoteServiceTest {
         VoteResponseDto expectedResult = VoteResponseDto.from(vote);
         given(voteRepository.save(any())).willReturn(vote);
 
-        //when
+        // when
         VoteResponseDto voteResponseDto = voteService.save(VoteSaveRequestDto.builder()
                 .title("1월 9일 풋살 투표")
                 .voteItems(List.of(
@@ -65,7 +65,7 @@ class VoteServiceTest {
                         VoteItemSaveRequestDto.builder().title("12시 ~ 2시 실내").build())
                 ).build());
 
-        //then
+        // then
         Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
 
     }
@@ -83,7 +83,7 @@ class VoteServiceTest {
     @Test
     @DisplayName("투표 수정")
     void update() {
-        //given
+        // given
         Vote vote = Vote.builder()
                 .id(1L)
                 .title("12월 15일 풋살 투표")
@@ -110,7 +110,7 @@ class VoteServiceTest {
                         new VoteItemResponseDto(2L, "12시 ~ 2시 실내", Set.of(1L))));
         voteRepository.save(vote);
 
-        //when
+        // when
         VoteResponseDto voteResponseDto = voteService.update(1L, VoteUpdateRequestDto.builder()
                 .title("1월 15일 풋살 투표")
                 .voteItems(List.of(
@@ -118,7 +118,7 @@ class VoteServiceTest {
                         VoteItemUpdateRequestDto.builder().id(2L).title("12시 ~ 2시 실내").build()))
                 .build());
 
-        //then
+        // then
         Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 

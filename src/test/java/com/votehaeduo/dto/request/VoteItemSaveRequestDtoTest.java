@@ -12,7 +12,7 @@ class VoteItemSaveRequestDtoTest {
     @Test
     @DisplayName("VoteItemSaveRequestDto toEntity 테스트")
     void toEntity() {
-        //given
+        // given
         Vote vote = Vote.builder().build();
         VoteItemSaveRequestDto voteItemSaveRequestDto = VoteItemSaveRequestDto.builder()
                 .title("9시 ~ 11시")
@@ -22,10 +22,10 @@ class VoteItemSaveRequestDtoTest {
                 .vote(vote)
                 .build();
 
-        //when
+        // when
         VoteItem result = voteItemSaveRequestDto.toEntity(vote);
 
-        //then
+        // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 

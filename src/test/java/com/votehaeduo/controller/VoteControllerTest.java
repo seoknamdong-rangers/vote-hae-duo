@@ -1,7 +1,5 @@
 package com.votehaeduo.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
@@ -66,7 +64,7 @@ class VoteControllerTest {
     @Test
     @DisplayName("투표 수정")
     void updateVote() throws Exception {
-        //given
+        // given
         VoteResponseDto voteResponseDto = new VoteResponseDto(1L, "1월 9일 풋살",
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 25),
@@ -74,11 +72,9 @@ class VoteControllerTest {
                 List.of(new VoteItemResponseDto(1L, "11시 ~ 1시 실외", Set.of(1L, 2L)),
                         new VoteItemResponseDto(2L, "12시 ~ 2시 실내", Set.of(1L, 2L))));
         given(voteService.update(any(), any())).willReturn(voteResponseDto);
-
-        //when
         String voteRequestDtoJsonString = objectMapper.writeValueAsString(voteResponseDto);
 
-        //then
+        // when, then
         mvc.perform(put("/api/votes/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(voteRequestDtoJsonString))
