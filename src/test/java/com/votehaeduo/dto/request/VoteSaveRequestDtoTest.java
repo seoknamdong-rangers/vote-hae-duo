@@ -19,14 +19,14 @@ class VoteSaveRequestDtoTest {
                 List.of(new VoteItemSaveRequestDto("11시 ~ 1시"),
                         new VoteItemSaveRequestDto("12시 ~ 2시")));
         Vote expected = Vote.builder()
-                .name("12월 28일 풋살 투표")
+                .title("12월 28일 풋살 투표")
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
-                        .name("11시 ~ 1시")
+                        .title("11시 ~ 1시")
                         .vote(expected)
                         .build(),
                 VoteItem.builder()
-                        .name("12시 ~ 2시")
+                        .title("12시 ~ 2시")
                         .vote(expected)
                         .build());
         expected.addItems(voteItems);

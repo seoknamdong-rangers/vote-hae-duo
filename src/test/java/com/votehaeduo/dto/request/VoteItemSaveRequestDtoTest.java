@@ -18,7 +18,7 @@ class VoteItemSaveRequestDtoTest {
                 .title("9시 ~ 11시")
                 .build();
         VoteItem expected = VoteItem.builder()
-                .name("9시 ~ 11시")
+                .title("9시 ~ 11시")
                 .vote(vote)
                 .build();
 
