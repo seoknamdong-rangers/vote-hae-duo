@@ -22,7 +22,7 @@ public class VoteItem {
 
     private String title;
 
-    @ElementCollection(fetch = FetchType.LAZY)
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "member_id")
     private Set<Long> memberIds;
 

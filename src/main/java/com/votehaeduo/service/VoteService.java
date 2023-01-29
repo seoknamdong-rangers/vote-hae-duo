@@ -1,5 +1,6 @@
 package com.votehaeduo.service;
 
+import com.votehaeduo.dto.request.VoteItemUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
@@ -47,17 +48,17 @@ public class VoteService {
         if (voteUpdateRequestDto.getTitle() != null) {
             vote.setTitle(voteUpdateRequestDto.getTitle());
         }
-        if (voteUpdateRequestDto.getVoteItems() != null) {
-            List<VoteItem> items = voteUpdateRequestDto.getVoteItems().stream()
-                    .map(voteItemUpdateRequestDto ->  voteItemUpdateRequestDto.toEntity(vote))
-                    .collect(Collectors.toList());
-            vote.setVoteItems(items);
-        }
         if (voteUpdateRequestDto.getStartDate() != null) {
             vote.setStartDate(voteUpdateRequestDto.getStartDate());
         }
         if (voteUpdateRequestDto.getEndDate() != null) {
             vote.setCreatedBy(voteUpdateRequestDto.getCreatedBy());
+        }
+        if (voteUpdateRequestDto.getVoteItems() != null) {
+            List<VoteItem> items = voteUpdateRequestDto.getVoteItems().stream()
+                    .map(voteItemUpdateRequestDto -> voteItemUpdateRequestDto.toEntity(vote))
+                    .collect(Collectors.toList());
+            vote.setVoteItems(items);
         }
         return VoteResponseDto.from(voteRepository.save(vote));
     }

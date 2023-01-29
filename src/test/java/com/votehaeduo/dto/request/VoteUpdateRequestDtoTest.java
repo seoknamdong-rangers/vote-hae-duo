@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,8 +22,8 @@ class VoteUpdateRequestDtoTest {
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 25),
                 "성준",
-                List.of(new VoteItemUpdateRequestDto(1L, "11시 ~ 1시"),
-                        new VoteItemUpdateRequestDto(2L, "12시 ~ 2시")));
+                List.of(new VoteItemUpdateRequestDto(1L, "11시 ~ 1시", Set.of(1L, 2L)),
+                        new VoteItemUpdateRequestDto(2L, "12시 ~ 2시", Set.of(3L, 4L))));
         Vote expected = Vote.builder()
                 .title("12월 28일 풋살 투표")
                 .startDate(LocalDate.of(2023, 1, 20))
@@ -33,11 +34,13 @@ class VoteUpdateRequestDtoTest {
                         .id(1L)
                         .title("11시 ~ 1시")
                         .vote(expected)
+                        .memberIds(Set.of(1L, 2L))
                         .build(),
                 VoteItem.builder()
                         .id(2L)
                         .title("12시 ~ 2시")
                         .vote(expected)
+                        .memberIds(Set.of(3L, 4L))
                         .build());
         expected.addItems(voteItems);
 

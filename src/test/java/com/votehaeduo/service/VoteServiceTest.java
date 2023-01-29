@@ -18,13 +18,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static reactor.core.publisher.Mono.when;
 
 @ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
@@ -84,8 +82,9 @@ class VoteServiceTest {
     @DisplayName("투표 수정")
     void update() {
         // given
+        Long id = new Random().nextLong();
         Vote vote = Vote.builder()
-                .id(1L)
+                .id(id)
                 .title("12월 15일 풋살 투표")
                 .startDate(LocalDate.of(2023, 1, 20))
                 .endDate(LocalDate.of(2023, 1, 25))
@@ -95,27 +94,32 @@ class VoteServiceTest {
                         .id(1L)
                         .title("12 ~ 2 실내")
                         .vote(vote)
+                        .memberIds(Set.of(1L, 2L))
                         .build(),
                 VoteItem.builder()
                         .id(2L)
                         .title("11 ~ 1 야외")
                         .vote(vote)
+                        .memberIds(Set.of(3L, 4L))
                         .build());
         vote.addItems(voteItems);
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
-        VoteResponseDto expectedResult = new VoteResponseDto(1L, "1월 15일 풋살 투표",
+        VoteResponseDto expectedResult = new VoteResponseDto(id, "1월 15일 풋살 투표",
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 25), "성준",
-                List.of(new VoteItemResponseDto(1L, "11시 ~ 1시 실외", Set.of(1L)),
-                        new VoteItemResponseDto(2L, "12시 ~ 2시 실내", Set.of(1L))));
-        voteRepository.save(vote);
+                List.of(new VoteItemResponseDto(1L, "11시 ~ 1시 실외", Set.of(1L, 2L)),
+                        new VoteItemResponseDto(2L, "12시 ~ 2시 실내", Set.of(3L, 4L))));
+        given(voteRepository.save(any())).willReturn(vote);
 
         // when
-        VoteResponseDto voteResponseDto = voteService.update(1L, VoteUpdateRequestDto.builder()
+        VoteResponseDto voteResponseDto = voteService.update(id, VoteUpdateRequestDto.builder()
                 .title("1월 15일 풋살 투표")
+                .startDate(LocalDate.of(2023, 1, 20))
+                .endDate(LocalDate.of(2023, 1, 25))
+                .createdBy("성준")
                 .voteItems(List.of(
-                        VoteItemUpdateRequestDto.builder().id(1L).title("11시 ~ 1시 실외").build(),
-                        VoteItemUpdateRequestDto.builder().id(2L).title("12시 ~ 2시 실내").build()))
+                        VoteItemUpdateRequestDto.builder().id(1L).title("11시 ~ 1시 실외").memberIds(Set.of(1L, 2L)).build(),
+                        VoteItemUpdateRequestDto.builder().id(2L).title("12시 ~ 2시 실내").memberIds(Set.of(3L, 4L)).build()))
                 .build());
 
         // then
