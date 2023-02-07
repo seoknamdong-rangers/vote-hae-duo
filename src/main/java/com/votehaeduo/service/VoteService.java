@@ -1,18 +1,17 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.request.VoteUpdateRequestDto;
-import com.votehaeduo.dto.request.VoteSaveRequestDto;
-import com.votehaeduo.dto.response.VoteResponseDto;
+import com.votehaeduo.dto.response.GetVoteResponseDto;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
-import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -20,54 +19,18 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
 
-    //등록
-    @Transactional
-    public VoteResponseDto save(VoteSaveRequestDto voteSaveRequestDto) {
-        return VoteResponseDto.from(voteRepository.save(voteSaveRequestDto.toEntity()));
-    }
-
     //전체조회
     @Transactional(readOnly = true)
-    public List<VoteResponseDto> findAll() {
-        return voteRepository.findAll().stream()
-                .map(VoteResponseDto::from)
-                .collect(Collectors.toList());
-    }
-
-    //상세조회
-    public VoteResponseDto findById(Long id) {
-        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        return VoteResponseDto.from(vote);
-    }
-
-    //수정
-    @Transactional
-    public VoteResponseDto update(Long id, VoteUpdateRequestDto voteUpdateRequestDto) {
-        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        if (voteUpdateRequestDto.getTitle() != null) {
-            vote.setTitle(voteUpdateRequestDto.getTitle());
+    public List<GetVoteResponseDto> findAll() { //스트림으로 바꾸고 싶음
+        List<GetVoteResponseDto> voteResponseDtos = new ArrayList<>();
+        for (Vote vote : voteRepository.findAll()) {
+            Set<Long> voteTotalMemberIdsCount = new HashSet<>();
+            for (VoteItem voteItem : vote.getVoteItems()) {
+                voteTotalMemberIdsCount.addAll(voteItem.getMemberIds());
+            }
+            voteResponseDtos.add(GetVoteResponseDto.of(vote, (long) voteTotalMemberIdsCount.size()));
         }
-        if (voteUpdateRequestDto.getStartDate() != null) {
-            vote.setStartDate(voteUpdateRequestDto.getStartDate());
-        }
-        if (voteUpdateRequestDto.getEndDate() != null) {
-            vote.setCreatedBy(voteUpdateRequestDto.getCreatedBy());
-        }
-        if (voteUpdateRequestDto.getVoteItems() != null) {
-            List<VoteItem> items = voteUpdateRequestDto.getVoteItems().stream()
-                    .map(voteItemUpdateRequestDto -> voteItemUpdateRequestDto.toEntity(vote))
-                    .collect(Collectors.toList());
-            vote.setVoteItems(items);
-        }
-        return VoteResponseDto.from(voteRepository.save(vote));
-    }
-
-    //삭제
-    @Transactional
-    public boolean delete(Long id) {
-        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        voteRepository.delete(vote);
-        return true;
+        return voteResponseDtos;
     }
 
 }
