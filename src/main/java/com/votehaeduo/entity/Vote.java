@@ -1,6 +1,5 @@
 package com.votehaeduo.entity;
 
-import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,7 +28,12 @@ public class Vote {
     private String createdBy;
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "vote", cascade = CascadeType.PERSIST)
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "vote",
+            cascade = CascadeType.PERSIST,
+            orphanRemoval = true
+    )
     private List<VoteItem> voteItems = new ArrayList<>();
 
     public void addItems(List<VoteItem> items) {

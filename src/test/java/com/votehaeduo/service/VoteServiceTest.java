@@ -8,6 +8,7 @@ import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -17,12 +18,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
-import static reactor.core.publisher.Mono.when;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
@@ -127,6 +134,29 @@ class VoteServiceTest {
     }
 
     @Test
+    @DisplayName("투표 삭제")
     void delete() {
+        // given
+        given(voteRepository.findById(anyLong())).willReturn(Optional.of(Vote.builder().build()));
+        doNothing().when(voteRepository).delete(any());
+
+        // when
+        boolean result = voteService.delete(new Random().nextLong());
+
+        // then
+        assertThat(result).isTrue();
     }
+
+    @Test
+    @DisplayName("투표 삭제 실패하는 경우")
+    void deleteIfThrow() {
+        // given
+        given(voteRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when, then
+        assertThatThrownBy(() -> voteService.delete(new Random().nextLong()))
+                .isInstanceOf(VoteNotFoundException.class)
+                .hasMessage("해당 투표를 찾을 수 없습니다.");
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.request.VoteItemUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
@@ -64,8 +63,11 @@ public class VoteService {
     }
 
     //삭제
-    public void delete(Long id) {
-        voteRepository.deleteById(id);
+    @Transactional
+    public boolean delete(Long id) {
+        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
+        voteRepository.delete(vote);
+        return true;
     }
 
 }
