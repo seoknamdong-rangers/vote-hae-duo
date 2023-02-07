@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 
 @Getter
 @NoArgsConstructor
@@ -13,11 +15,13 @@ public class VoteItemResponseDto {
 
     private Long id;
     private String title;
+    private Set<Long> memberIds;
 
     public static VoteItemResponseDto from(VoteItem voteItem) {
         return new VoteItemResponseDto(
                 voteItem.getId(),
-                voteItem.getTitle()
+                voteItem.getTitle(),
+                voteItem.getMemberIds()
         );
     }
 
