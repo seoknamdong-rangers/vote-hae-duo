@@ -7,11 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Random;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class VoteItemResponseDtoTest {
+class GetVoteItemResponseDtoTest {
 
     @Test
     @DisplayName("voteItemResponseDto 테스트")
@@ -19,13 +20,14 @@ class VoteItemResponseDtoTest {
         //given
         Long id = new Random().nextLong();
         VoteItem voteItems = VoteItem.builder()
-                        .id(id)
-                        .name("item_name1")
-                        .build();
-        VoteItemResponseDto expected = new VoteItemResponseDto(id, "item_name1");
+                .id(id)
+                .title("item_name1")
+                .memberIds(Set.of(1L, 2L))
+                .build();
+        GetVoteItemResponseDto expected = new GetVoteItemResponseDto(id, "item_name1", Set.of(1L, 2L));
 
         //when
-        VoteItemResponseDto result = VoteItemResponseDto.from(voteItems);
+        GetVoteItemResponseDto result = GetVoteItemResponseDto.from(voteItems);
 
         //then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

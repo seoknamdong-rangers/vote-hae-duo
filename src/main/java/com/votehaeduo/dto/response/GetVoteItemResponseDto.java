@@ -5,19 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteItemResponseDto {
+public class GetVoteItemResponseDto {
 
     private Long id;
     private String title;
+    private Set<Long> memberIds;
 
-    public static VoteItemResponseDto from(VoteItem voteItem) {
-        return new VoteItemResponseDto(
+    public static GetVoteItemResponseDto from(VoteItem voteItem) {
+        return new GetVoteItemResponseDto(
                 voteItem.getId(),
-                voteItem.getTitle()
+                voteItem.getTitle(),
+                voteItem.getMemberIds()
         );
     }
 
