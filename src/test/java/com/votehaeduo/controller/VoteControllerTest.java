@@ -21,6 +21,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,14 +44,14 @@ class VoteControllerTest {
 
     @Test
     @DisplayName("투표 등록")
-    void insertVote() throws Exception {
+    void insertVote() {
 
     }
 
 
     @Test
     @DisplayName("투표 전체 조회")
-    void findAllVote() throws Exception {
+    void findAllVote() {
 
     }
 
@@ -93,7 +94,15 @@ class VoteControllerTest {
 
     @Test
     @DisplayName("투표 삭제")
-    void deleteVote() {
+    void deleteVote() throws Exception {
+        //given
+        given(voteService.delete(any())).willReturn(true);
+
+        //when & then
+        mvc.perform(delete("/api/votes/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("true"));
     }
 
 }

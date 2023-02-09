@@ -43,8 +43,8 @@ public class VoteController {
 
     //투표 삭제
     @DeleteMapping("/{voteId}")
-    public void delete(@PathVariable("voteId") Long id) {
-        voteService.delete(id);
+    public boolean delete(@PathVariable("voteId") Long id) {
+        return voteService.delete(id);
     }
 
 }
