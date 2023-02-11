@@ -4,6 +4,7 @@ import com.votehaeduo.dto.request.VoteItemUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteItemSaveRequestDto;
 import com.votehaeduo.dto.request.VoteSaveRequestDto;
+import com.votehaeduo.dto.response.PostVoteResponseDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
@@ -47,31 +48,39 @@ class VoteServiceTest {
         Vote vote = Vote.builder()
                 .id(1L)
                 .title("1월 9일 풋살 투표")
+                .startDate(LocalDate.of(2023, 2, 9))
+                .endDate(LocalDate.of(2023, 2, 19))
+                .createdBy("성준")
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
                         .id(1L)
                         .title("11시 ~ 1시 실외")
                         .vote(vote)
+                        .memberIds(Set.of(1L, 2L))
                         .build(),
                 VoteItem.builder()
                         .id(2L)
                         .title("12시 ~ 2시 실내")
                         .vote(vote)
+                        .memberIds(Set.of(1L, 2L))
                         .build());
         vote.addItems(voteItems);
-        VoteResponseDto expectedResult = VoteResponseDto.from(vote);
+        PostVoteResponseDto expectedResult = PostVoteResponseDto.from(vote);
         given(voteRepository.save(any())).willReturn(vote);
 
         // when
-        VoteResponseDto voteResponseDto = voteService.save(VoteSaveRequestDto.builder()
+        PostVoteResponseDto postVoteResponseDto = voteService.save(VoteSaveRequestDto.builder()
                 .title("1월 9일 풋살 투표")
+                .startDate(LocalDate.of(2023, 2, 9))
+                .endDate(LocalDate.of(2023, 2, 19))
+                .createdBy("성준")
                 .voteItems(List.of(
                         VoteItemSaveRequestDto.builder().title("11시 ~ 1시 실외").build(),
                         VoteItemSaveRequestDto.builder().title("12시 ~ 2시 실내").build())
                 ).build());
 
         // then
-        Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
+        Assertions.assertThat(postVoteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
 
     }
 

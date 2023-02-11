@@ -1,6 +1,8 @@
 package com.votehaeduo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.votehaeduo.dto.response.PostVoteItemResponseDto;
+import com.votehaeduo.dto.response.PostVoteResponseDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
@@ -21,6 +23,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -44,8 +47,30 @@ class VoteControllerTest {
 
     @Test
     @DisplayName("투표 등록")
-    void insertVote() {
+    void insertVote() throws Exception {
+        // given
+        PostVoteResponseDto expectedVoteResponseDto = new PostVoteResponseDto(1L, "1월 8일 풋살",
+                LocalDate.of(2023, 1, 20),
+                LocalDate.of(2023, 1, 30), "성준",
+                List.of(new PostVoteItemResponseDto(1L, "11시 ~ 1시 실외"),
+                        new PostVoteItemResponseDto(2L, "12시 ~ 2시 실내")));
+        given(voteService.save(any())).willReturn(expectedVoteResponseDto);
+        String voteRequestDtoJsonString = objectMapper.writeValueAsString(expectedVoteResponseDto);
 
+        // when & then
+        mvc.perform(post("/api/votes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(voteRequestDtoJsonString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.title").value("1월 8일 풋살"))
+                .andExpect(jsonPath("$.startDate").value("2023-01-20"))
+                .andExpect(jsonPath("$.endDate").value("2023-01-30"))
+                .andExpect(jsonPath("$.createdBy").value("성준"))
+                .andExpect(jsonPath("$.voteItems.[0].id").value(1))
+                .andExpect(jsonPath("$.voteItems.[0].title").value("11시 ~ 1시 실외"))
+                .andExpect(jsonPath("$.voteItems.[1].id").value(2))
+                .andExpect(jsonPath("$.voteItems.[1].title").value("12시 ~ 2시 실내"));
     }
 
 
