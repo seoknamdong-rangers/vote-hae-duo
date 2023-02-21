@@ -17,25 +17,20 @@ class GetVoteItemResponseDtoTest {
     @Test
     @DisplayName("voteItemResponseDto 테스트")
     void from() {
-        // given
+        //given
         Long id = new Random().nextLong();
         VoteItem voteItems = VoteItem.builder()
                 .id(id)
                 .title("item_name1")
-                .memberIds(Set.of(1L))
+                .memberIds(Set.of(1L, 2L))
                 .build();
-//        GetVoteItemResponseDto expected = new GetVoteItemResponseDto(id, "item_name1", Set.of(1L));
-//                .id(id)
-//                .title("item_name1")
-//                .memberIds(Set.of(1L, 2L))
-//                .build();
-//        GetVoteItemResponseDto expected = new GetVoteItemResponseDto(id, "item_name1", Set.of(1L, 2L));
+        GetVoteItemResponseDto expected = new GetVoteItemResponseDto(id, "item_name1", Set.of(1L, 2L));
 
         //when
         GetVoteItemResponseDto result = GetVoteItemResponseDto.from(voteItems);
 
-        // then
-        //assertThat(result).usingRecursiveComparison().isEqualTo(expected);
+        //then
+        assertThat(result).usingRecursiveComparison().isEqualTo(expected);
     }
 
 }
