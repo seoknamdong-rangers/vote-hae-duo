@@ -7,6 +7,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,10 +20,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class VoteSaveRequestDto {
 
+    @NotBlank(message = "제목은 공백이 아니어야 합니다.")
     private String title;
+    @NotNull(message = "투표 등록 일자를 입력해주세요.")
     private LocalDate startDate;
+    @NotNull(message = "투표 종료 일자를 입력해주세요.")
     private LocalDate endDate;
+    @NotBlank(message = "작성자는 공백이 아니어야 합니다.")
     private String createdBy;
+    @NotEmpty(message = "투표 항목은 공백이 아니어야 합니다.")
     private List<VoteItemSaveRequestDto> voteItems;
 
     public Vote toEntity() {

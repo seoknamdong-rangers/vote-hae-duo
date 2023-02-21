@@ -8,6 +8,7 @@ import com.votehaeduo.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,7 +20,7 @@ public class VoteController {
 
     //투표 등록
     @PostMapping
-    public PostVoteResponseDto save(@RequestBody VoteSaveRequestDto voteSaveRequestDto) {
+    public PostVoteResponseDto save(@RequestBody @Valid final VoteSaveRequestDto voteSaveRequestDto) {
         return voteService.save(voteSaveRequestDto);
     }
 

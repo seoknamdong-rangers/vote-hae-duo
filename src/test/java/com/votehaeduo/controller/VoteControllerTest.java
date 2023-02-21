@@ -1,6 +1,7 @@
 package com.votehaeduo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.votehaeduo.dto.request.VoteSaveRequestDto;
 import com.votehaeduo.dto.response.PostVoteItemResponseDto;
 import com.votehaeduo.dto.response.PostVoteResponseDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
@@ -15,12 +16,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -46,8 +49,8 @@ class VoteControllerTest {
     }
 
     @Test
-    @DisplayName("투표 등록")
-    void insertVote() throws Exception {
+    @DisplayName("투표 등록 성공")
+    void insertVote_success() throws Exception {
         // given
         PostVoteResponseDto expectedVoteResponseDto = new PostVoteResponseDto(1L, "1월 8일 풋살",
                 LocalDate.of(2023, 1, 20),
@@ -71,6 +74,23 @@ class VoteControllerTest {
                 .andExpect(jsonPath("$.voteItems.[0].title").value("11시 ~ 1시 실외"))
                 .andExpect(jsonPath("$.voteItems.[1].id").value(2))
                 .andExpect(jsonPath("$.voteItems.[1].title").value("12시 ~ 2시 실내"));
+    }
+
+    @Test
+    @DisplayName("투표 등록 실패")
+    void insertVote_fail() throws Exception {
+        // given
+        VoteSaveRequestDto voteSaveRequestDto = new VoteSaveRequestDto("1월 8일 풋살",
+                LocalDate.of(2023, 2, 10),
+                LocalDate.of(2023, 2, 20), "성준", List.of());
+        String json = objectMapper.writeValueAsString(voteSaveRequestDto);
+
+        // when & then
+        mvc.perform(post("/api/votes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException));
     }
 
 
