@@ -20,10 +20,4 @@ public class VoteController {
         return voteService.findAll();
     }
 
-    //투표 삭제
-    @DeleteMapping("/{voteId}")
-    public boolean delete(@PathVariable("voteId") Long id) {
-        return voteService.delete(id);
-    }
-
 }
