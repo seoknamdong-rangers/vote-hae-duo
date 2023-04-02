@@ -1,9 +1,9 @@
 package com.votehaeduo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.votehaeduo.dto.request.VoteSaveRequestDto;
-import com.votehaeduo.dto.response.PostVoteItemResponseDto;
-import com.votehaeduo.dto.response.PostVoteResponseDto;
+import com.votehaeduo.dto.request.VoteCreateRequestDto;
+import com.votehaeduo.dto.response.VoteItemCreateResponseDto;
+import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
@@ -52,12 +52,12 @@ class VoteControllerTest {
     @DisplayName("투표 등록 성공")
     void insertVote_success() throws Exception {
         // given
-        PostVoteResponseDto expectedVoteResponseDto = new PostVoteResponseDto(1L, "1월 8일 풋살",
+        VoteCreateResponseDto expectedVoteResponseDto = new VoteCreateResponseDto(1L, "1월 8일 풋살",
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 30), "성준",
-                List.of(new PostVoteItemResponseDto(1L, "11시 ~ 1시 실외"),
-                        new PostVoteItemResponseDto(2L, "12시 ~ 2시 실내")));
-        given(voteService.save(any())).willReturn(expectedVoteResponseDto);
+                List.of(new VoteItemCreateResponseDto(1L, "11시 ~ 1시 실외"),
+                        new VoteItemCreateResponseDto(2L, "12시 ~ 2시 실내")));
+        given(voteService.create(any())).willReturn(expectedVoteResponseDto);
         String voteRequestDtoJsonString = objectMapper.writeValueAsString(expectedVoteResponseDto);
 
         // when & then
@@ -80,10 +80,10 @@ class VoteControllerTest {
     @DisplayName("투표 등록 실패")
     void insertVote_fail() throws Exception {
         // given
-        VoteSaveRequestDto voteSaveRequestDto = new VoteSaveRequestDto("1월 8일 풋살",
+        VoteCreateRequestDto voteCreateRequestDto = new VoteCreateRequestDto("1월 8일 풋살",
                 LocalDate.of(2023, 2, 10),
                 LocalDate.of(2023, 2, 20), "성준", List.of());
-        String json = objectMapper.writeValueAsString(voteSaveRequestDto);
+        String json = objectMapper.writeValueAsString(voteCreateRequestDto);
 
         // when & then
         mvc.perform(post("/api/votes")

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostVoteResponseDto {
+public class VoteCreateResponseDto {
 
     private Long id;
     private String title;
@@ -22,17 +22,17 @@ public class PostVoteResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate endDate;
     private String createdBy;
-    private List<PostVoteItemResponseDto> voteItems;
+    private List<VoteItemCreateResponseDto> voteItems;
 
-    public static PostVoteResponseDto from(Vote vote) {
-        return new PostVoteResponseDto(
+    public static VoteCreateResponseDto from(Vote vote) {
+        return new VoteCreateResponseDto(
                 vote.getId(),
                 vote.getTitle(),
                 vote.getStartDate(),
                 vote.getEndDate(),
                 vote.getCreatedBy(),
                 vote.getVoteItems().stream()
-                        .map(PostVoteItemResponseDto::from)
+                        .map(VoteItemCreateResponseDto::from)
                         .collect(Collectors.toList())
         );
     }

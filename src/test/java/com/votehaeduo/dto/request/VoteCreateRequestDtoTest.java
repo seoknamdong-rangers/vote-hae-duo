@@ -10,17 +10,17 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VoteSaveRequestDtoTest {
+class VoteCreateRequestDtoTest {
 
     @Test
-    @DisplayName("VoteSaveRequestDtoTest toEntity 테스트")
+    @DisplayName("VoteCreateRequestDtoTest toEntity 테스트")
     void toEntity() {
         // given
-        VoteSaveRequestDto voteSaveRequestDto = new VoteSaveRequestDto("12월 28일 풋살 투표",
+        VoteCreateRequestDto voteCreateRequestDto = new VoteCreateRequestDto("12월 28일 풋살 투표",
                 LocalDate.of(2023, 2, 9),
                 LocalDate.of(2023, 2, 19), "성준",
-                List.of(new VoteItemSaveRequestDto("11시 ~ 1시"),
-                        new VoteItemSaveRequestDto("12시 ~ 2시")));
+                List.of(new VoteItemCreateRequestDto("11시 ~ 1시"),
+                        new VoteItemCreateRequestDto("12시 ~ 2시")));
         Vote expected = Vote.builder()
                 .title("12월 28일 풋살 투표")
                 .startDate(LocalDate.of(2023, 2, 9))
@@ -38,7 +38,7 @@ class VoteSaveRequestDtoTest {
         expected.addItems(voteItems);
 
         // when
-        Vote result = voteSaveRequestDto.toEntity();
+        Vote result = voteCreateRequestDto.toEntity();
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

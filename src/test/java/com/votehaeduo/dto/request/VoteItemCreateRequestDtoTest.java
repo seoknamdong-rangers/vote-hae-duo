@@ -7,14 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VoteItemSaveRequestDtoTest {
+class VoteItemCreateRequestDtoTest {
 
     @Test
-    @DisplayName("VoteItemSaveRequestDto toEntity 테스트")
+    @DisplayName("VoteItemCreateRequestDto toEntity 테스트")
     void toEntity() {
         // given
         Vote vote = Vote.builder().build();
-        VoteItemSaveRequestDto voteItemSaveRequestDto = VoteItemSaveRequestDto.builder()
+        VoteItemCreateRequestDto voteItemCreateRequestDto = VoteItemCreateRequestDto.builder()
                 .title("9시 ~ 11시")
                 .build();
         VoteItem expected = VoteItem.builder()
@@ -23,7 +23,7 @@ class VoteItemSaveRequestDtoTest {
                 .build();
 
         // when
-        VoteItem result = voteItemSaveRequestDto.toEntity(vote);
+        VoteItem result = voteItemCreateRequestDto.toEntity(vote);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

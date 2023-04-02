@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteSaveRequestDto {
+public class VoteCreateRequestDto {
 
     @NotBlank(message = "제목은 공백이 아니어야 합니다.")
     private String title;
@@ -29,7 +29,7 @@ public class VoteSaveRequestDto {
     @NotBlank(message = "작성자는 공백이 아니어야 합니다.")
     private String createdBy;
     @NotEmpty(message = "투표 항목은 공백이 아니어야 합니다.")
-    private List<VoteItemSaveRequestDto> voteItems;
+    private List<VoteItemCreateRequestDto> voteItems;
 
     public Vote toEntity() {
         Vote vote = Vote.builder()
@@ -39,7 +39,7 @@ public class VoteSaveRequestDto {
                 .createdBy(this.createdBy)
                 .build();
         List<VoteItem> items = voteItems.stream()
-                .map(voteItemSaveRequestDto -> voteItemSaveRequestDto.toEntity(vote))
+                .map(voteItemCreateRequestDto -> voteItemCreateRequestDto.toEntity(vote))
                 .collect(Collectors.toList());
         vote.addItems(items);
         return vote;

@@ -12,7 +12,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class PostVoteItemResponseDtoTest {
+class VoteItemCreateResponseDtoTest {
 
     @Test
     @DisplayName("PostVoteItemResponseDto from 테스트")
@@ -24,10 +24,10 @@ class PostVoteItemResponseDtoTest {
                 .title("item_name1")
                 .memberIds(Set.of(1L))
                 .build();
-        PostVoteItemResponseDto expected = new PostVoteItemResponseDto(id, "item_name1");
+        VoteItemCreateResponseDto expected = new VoteItemCreateResponseDto(id, "item_name1");
 
         // when
-        PostVoteItemResponseDto result = PostVoteItemResponseDto.from(voteItems);
+        VoteItemCreateResponseDto result = VoteItemCreateResponseDto.from(voteItems);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

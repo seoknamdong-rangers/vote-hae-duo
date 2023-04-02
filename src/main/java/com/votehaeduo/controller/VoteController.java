@@ -1,8 +1,8 @@
 package com.votehaeduo.controller;
 
-import com.votehaeduo.dto.request.VoteSaveRequestDto;
+import com.votehaeduo.dto.request.VoteCreateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
-import com.votehaeduo.dto.response.PostVoteResponseDto;
+import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +20,8 @@ public class VoteController {
 
     //투표 등록
     @PostMapping
-    public PostVoteResponseDto save(@RequestBody @Valid final VoteSaveRequestDto voteSaveRequestDto) {
-        return voteService.save(voteSaveRequestDto);
+    public VoteCreateResponseDto create(@RequestBody @Valid final VoteCreateRequestDto voteCreateRequestDto) {
+        return voteService.create(voteCreateRequestDto);
     }
 
     //투표 전체 조회

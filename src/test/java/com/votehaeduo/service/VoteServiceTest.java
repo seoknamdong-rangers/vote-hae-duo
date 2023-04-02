@@ -2,9 +2,9 @@ package com.votehaeduo.service;
 
 import com.votehaeduo.dto.request.VoteItemUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
-import com.votehaeduo.dto.request.VoteItemSaveRequestDto;
-import com.votehaeduo.dto.request.VoteSaveRequestDto;
-import com.votehaeduo.dto.response.PostVoteResponseDto;
+import com.votehaeduo.dto.request.VoteItemCreateRequestDto;
+import com.votehaeduo.dto.request.VoteCreateRequestDto;
+import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.entity.Vote;
@@ -65,22 +65,22 @@ class VoteServiceTest {
                         .memberIds(Set.of(1L, 2L))
                         .build());
         vote.addItems(voteItems);
-        PostVoteResponseDto expectedResult = PostVoteResponseDto.from(vote);
+        VoteCreateResponseDto expectedResult = VoteCreateResponseDto.from(vote);
         given(voteRepository.save(any())).willReturn(vote);
 
         // when
-        PostVoteResponseDto postVoteResponseDto = voteService.save(VoteSaveRequestDto.builder()
+        VoteCreateResponseDto voteCreateResponseDto = voteService.create(VoteCreateRequestDto.builder()
                 .title("1월 9일 풋살 투표")
                 .startDate(LocalDate.of(2023, 2, 9))
                 .endDate(LocalDate.of(2023, 2, 19))
                 .createdBy("성준")
                 .voteItems(List.of(
-                        VoteItemSaveRequestDto.builder().title("11시 ~ 1시 실외").build(),
-                        VoteItemSaveRequestDto.builder().title("12시 ~ 2시 실내").build())
+                        VoteItemCreateRequestDto.builder().title("11시 ~ 1시 실외").build(),
+                        VoteItemCreateRequestDto.builder().title("12시 ~ 2시 실내").build())
                 ).build());
 
         // then
-        Assertions.assertThat(postVoteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
+        Assertions.assertThat(voteCreateResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
 
     }
 

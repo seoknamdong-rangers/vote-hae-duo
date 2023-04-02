@@ -14,7 +14,7 @@ import java.util.Random;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class PostVoteResponseDtoTest {
+class VoteCreateResponseDtoTest {
 
     @Test
     @DisplayName("PostVoteResponseDto from 테스트")
@@ -39,14 +39,14 @@ class PostVoteResponseDtoTest {
                         .title("item_title2")
                         .build());
         vote.addItems(voteItems);
-        PostVoteResponseDto expected = new PostVoteResponseDto(id, "title",
+        VoteCreateResponseDto expected = new VoteCreateResponseDto(id, "title",
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 25), "성준",
-                List.of(new PostVoteItemResponseDto(1L, "item_title"),
-                        new PostVoteItemResponseDto(2L, "item_title2")));
+                List.of(new VoteItemCreateResponseDto(1L, "item_title"),
+                        new VoteItemCreateResponseDto(2L, "item_title2")));
 
         // when
-        PostVoteResponseDto result = PostVoteResponseDto.from(vote);
+        VoteCreateResponseDto result = VoteCreateResponseDto.from(vote);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

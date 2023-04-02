@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteItemSaveRequestDto {
+public class VoteItemCreateRequestDto {
 
     @NotBlank(message = "투표 항목의 제목은 공백이 아니어야 합니다.")
     private String title;

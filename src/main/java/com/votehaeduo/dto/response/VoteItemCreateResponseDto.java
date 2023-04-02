@@ -8,13 +8,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostVoteItemResponseDto {
+public class VoteItemCreateResponseDto {
 
     private Long id;
     private String title;
 
-    public static PostVoteItemResponseDto from(VoteItem voteItem) {
-        return new PostVoteItemResponseDto(
+    public static VoteItemCreateResponseDto from(VoteItem voteItem) {
+        return new VoteItemCreateResponseDto(
                 voteItem.getId(),
                 voteItem.getTitle()
         );
