@@ -1,6 +1,7 @@
 package com.votehaeduo.service;
 
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
+import com.votehaeduo.dto.response.FindVoteResponseDto;
 import com.votehaeduo.dto.request.VoteCreateRequestDto;
 import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +31,18 @@ public class VoteService {
 
     //전체조회
     @Transactional(readOnly = true)
-    public List<VoteResponseDto> findAll() {
+    public List<FindVoteResponseDto> findAll() { //스트림으로 바꾸고 싶음
         return voteRepository.findAll().stream()
-                .map(VoteResponseDto::from)
+                .map(vote -> FindVoteResponseDto.of(vote, (long) vote.getVoteItems().stream()
+                        .map(VoteItem::getMemberIds)
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toSet())
+                        .size()))
                 .collect(Collectors.toList());
     }
 
     //상세조회
+    @Transactional
     public VoteResponseDto findById(Long id) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
         return VoteResponseDto.from(vote);

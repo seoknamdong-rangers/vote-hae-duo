@@ -2,6 +2,7 @@ package com.votehaeduo.controller;
 
 import com.votehaeduo.dto.request.VoteCreateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
+import com.votehaeduo.dto.response.FindVoteResponseDto;
 import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
@@ -26,7 +27,7 @@ public class VoteController {
 
     //투표 전체 조회
     @GetMapping
-    public List<VoteResponseDto> findAll() { //페이지를 리턴 하는게 맞음
+    public List<FindVoteResponseDto> findAll() { //페이지를 리턴 하는게 맞음
         return voteService.findAll();
     }
 

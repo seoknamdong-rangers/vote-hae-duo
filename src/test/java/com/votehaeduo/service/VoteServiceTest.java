@@ -1,5 +1,7 @@
 package com.votehaeduo.service;
 
+import com.votehaeduo.dto.response.FindVoteItemResponseDto;
+import com.votehaeduo.dto.response.FindVoteResponseDto;
 import com.votehaeduo.dto.request.VoteItemUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.request.VoteItemCreateRequestDto;
@@ -19,10 +21,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,7 +89,42 @@ class VoteServiceTest {
     @Test
     @DisplayName("투표 전체 조회")
     void findAll() {
+        //given
+        Long id = new Random().nextLong();
+        Vote vote = Vote.builder()
+                .id(id)
+                .title("12월 15일 풋살 투표")
+                .startDate(LocalDate.of(2023, 1, 20))
+                .endDate(LocalDate.of(2023, 1, 30))
+                .createdBy("성준")
+                .build();
+        List<VoteItem> voteItems = List.of(VoteItem.builder()
+                        .id(1L)
+                        .title("12 ~ 2 실내")
+                        .vote(vote)
+                        .memberIds(Set.of(1L, 2L))
+                        .build(),
+                VoteItem.builder()
+                        .id(2L)
+                        .title("11 ~ 1 야외")
+                        .vote(vote)
+                        .memberIds(Set.of(1L, 2L))
+                        .build());
+        vote.addItems(voteItems);
+        List<Vote> votes = List.of(vote);
+        given(voteRepository.findAll()).willReturn(votes);
+        List<FindVoteResponseDto> expectedResult = List.of(new FindVoteResponseDto(id, "12월 15일 풋살 투표",
+                LocalDate.of(2023, 1, 20),
+                LocalDate.of(2023, 1, 30), "성준",
+                List.of(new FindVoteItemResponseDto(1L, "12 ~ 2 실내", Set.of(1L, 2L)),
+                        new FindVoteItemResponseDto(2L, "11 ~ 1 야외", Set.of(1L, 2L))), 2L)
+        );
 
+        //when
+        List<FindVoteResponseDto> voteResponseDto = voteService.findAll();
+
+        // then
+        Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test
@@ -167,5 +204,4 @@ class VoteServiceTest {
                 .isInstanceOf(VoteNotFoundException.class)
                 .hasMessage("해당 투표를 찾을 수 없습니다.");
     }
-
 }

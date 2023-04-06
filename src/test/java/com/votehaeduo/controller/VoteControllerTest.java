@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.votehaeduo.dto.request.VoteCreateRequestDto;
 import com.votehaeduo.dto.response.VoteItemCreateResponseDto;
 import com.votehaeduo.dto.response.VoteCreateResponseDto;
+import com.votehaeduo.dto.response.FindVoteItemResponseDto;
+import com.votehaeduo.dto.response.FindVoteResponseDto;
 import com.votehaeduo.dto.response.VoteItemResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.service.VoteService;
@@ -26,6 +28,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -96,8 +99,51 @@ class VoteControllerTest {
 
     @Test
     @DisplayName("투표 전체 조회")
-    void findAllVote() {
+    void findAllVote() throws Exception {
+        // given
+        List<FindVoteResponseDto> votes = List.of(
+                new FindVoteResponseDto(1L, "12월 15일 풋살 투표",
+                        LocalDate.of(2023, 1, 20),
+                        LocalDate.of(2023, 1, 30), "성준",
+                        List.of(new FindVoteItemResponseDto(1L, "12 ~ 2 실내", Set.of(1L, 2L)),
+                                new FindVoteItemResponseDto(2L, "11 ~ 1 야외", Set.of(1L, 2L))),
+                        10L),
+                new FindVoteResponseDto(2L, "12월 16일 풋살 투표",
+                        LocalDate.of(2023, 1, 20),
+                        LocalDate.of(2023, 1, 30), "성준",
+                        List.of(new FindVoteItemResponseDto(1L, "12 ~ 2 실내", Set.of(1L, 2L)),
+                                new FindVoteItemResponseDto(2L, "11 ~ 1 야외", Set.of(1L, 2L))),
+                        10L)
+        );
+        given(voteService.findAll()).willReturn(votes);
+        String voteRequestDtoJsonString = objectMapper.writeValueAsString(votes);
 
+        //when & then
+        mvc.perform(get("/api/votes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(voteRequestDtoJsonString))
+                .andExpect(jsonPath("$.[0].id").value(1))
+                .andExpect(jsonPath("$.[0].title").value("12월 15일 풋살 투표"))
+                .andExpect(jsonPath("$.[0].startDate").value("2023-01-20"))
+                .andExpect(jsonPath("$.[0].endDate").value("2023-01-30"))
+                .andExpect(jsonPath("$.[0].createdBy").value("성준"))
+                .andExpect(jsonPath("$.[0].voteItems.[0].memberIds.[*]").value(containsInAnyOrder(1, 2)))
+                .andExpect(jsonPath("$.[0].voteItems.[0].id").value(1))
+                .andExpect(jsonPath("$.[0].voteItems.[0].title").value("12 ~ 2 실내"))
+                .andExpect(jsonPath("$.[0].voteItems.[1].id").value(2))
+                .andExpect(jsonPath("$.[0].voteItems.[1].title").value("11 ~ 1 야외"))
+                .andExpect(jsonPath("$.[0].uniqueCount").value(10))
+                .andExpect(jsonPath("$.[1].id").value(2))
+                .andExpect(jsonPath("$.[1].title").value("12월 16일 풋살 투표"))
+                .andExpect(jsonPath("$.[1].startDate").value("2023-01-20"))
+                .andExpect(jsonPath("$.[1].endDate").value("2023-01-30"))
+                .andExpect(jsonPath("$.[1].createdBy").value("성준"))
+                .andExpect(jsonPath("$.[1].voteItems.[0].memberIds.[*]").value(containsInAnyOrder(1, 2)))
+                .andExpect(jsonPath("$.[1].voteItems.[0].id").value(1))
+                .andExpect(jsonPath("$.[1].voteItems.[0].title").value("12 ~ 2 실내"))
+                .andExpect(jsonPath("$.[1].voteItems.[1].id").value(2))
+                .andExpect(jsonPath("$.[1].voteItems.[1].title").value("11 ~ 1 야외"))
+                .andExpect(jsonPath("$.[1].uniqueCount").value(10));
     }
 
     @Test
