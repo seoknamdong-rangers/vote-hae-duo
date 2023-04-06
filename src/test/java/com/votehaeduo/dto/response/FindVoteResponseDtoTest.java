@@ -15,41 +15,42 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class VoteResponseDtoTest {
+class FindVoteResponseDtoTest {
 
     @Test
     @DisplayName("voteResponseDto 생성 테스트")
-    void from() {
+    void of() {
         // given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()
                 .id(id)
-                .title("title")
+                .title("name")
                 .startDate(LocalDate.of(2023, 1, 20))
-                .endDate(LocalDate.of(2023, 1, 25))
+                .endDate(LocalDate.of(2023, 1, 30))
                 .createdBy("성준")
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
                         .id(1L)
+                        .title("item_name")
                         .vote(vote)
-                        .title("item_title")
-                        .memberIds(Set.of(1L))
+                        .memberIds(Set.of(1L, 2L))
                         .build(),
                 VoteItem.builder()
                         .id(2L)
+                        .title("item_name2")
                         .vote(vote)
-                        .title("item_title2")
-                        .memberIds(Set.of(1L))
+                        .memberIds(Set.of(1L, 2L))
                         .build());
         vote.addItems(voteItems);
-        VoteResponseDto expected = new VoteResponseDto(id, "title",
+        FindVoteResponseDto expected = new FindVoteResponseDto(id, "name",
                 LocalDate.of(2023, 1, 20),
-                LocalDate.of(2023, 1, 25), "성준",
-                List.of(new VoteItemResponseDto(1L, "item_title", Set.of(1L)),
-                        new VoteItemResponseDto(2L, "item_title2", Set.of(1L))));
+                LocalDate.of(2023, 1, 30), "성준",
+                List.of(new FindVoteItemResponseDto(1L, "item_name", Set.of(1L, 2L)),
+                        new FindVoteItemResponseDto(2L, "item_name2", Set.of(1L, 2L))), 10L
+        );
 
         // when
-        VoteResponseDto result = VoteResponseDto.from(vote);
+        FindVoteResponseDto result = FindVoteResponseDto.of(vote, 10L);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);
