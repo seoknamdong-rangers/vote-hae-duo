@@ -3,6 +3,7 @@ package com.votehaeduo.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -22,8 +23,12 @@ public class VoteItem {
 
     private String title;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY) // EAGER 에서 LAZY 로 수정해봄
     @Column(name = "member_id")
-    private Set<Long> memberIds;
+    private Set<Long> memberIds = new HashSet<>(); // = new HashSet<>() 추가해봄
+
+    public void addMember(Long memberId) {
+        this.memberIds.add(memberId);
+    }
 
 }
