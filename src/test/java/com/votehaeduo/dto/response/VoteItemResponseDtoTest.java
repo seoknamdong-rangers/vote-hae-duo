@@ -24,7 +24,7 @@ class VoteItemResponseDtoTest {
                 .title("item_name1")
                 .memberIds(Set.of(1L))
                 .build();
-        VoteItemResponseDto expected = new VoteItemResponseDto(id, "item_name1", Set.of(1L));
+        VoteItemResponseDto expected = new VoteItemResponseDto(id, "item_name1", Set.of(1L), 1L);
 
         // when
         VoteItemResponseDto result = VoteItemResponseDto.from(voteItems);

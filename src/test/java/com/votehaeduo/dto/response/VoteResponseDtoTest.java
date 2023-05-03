@@ -45,8 +45,9 @@ class VoteResponseDtoTest {
         VoteResponseDto expected = new VoteResponseDto(id, "title",
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 25), "성준",
-                List.of(new VoteItemResponseDto(1L, "item_title", Set.of(1L)),
-                        new VoteItemResponseDto(2L, "item_title2", Set.of(1L))));
+                List.of(new VoteItemResponseDto(1L, "item_title", Set.of(1L), 1L),
+                        new VoteItemResponseDto(2L, "item_title2", Set.of(1L), 1L)),
+                1L);
 
         // when
         VoteResponseDto result = VoteResponseDto.from(vote);
