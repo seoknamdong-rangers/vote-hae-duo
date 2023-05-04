@@ -4,6 +4,7 @@ import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.exception.date.InvalidEndDateException;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;
 import org.assertj.core.api.Assertions;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -219,7 +221,7 @@ class VoteServiceTest {
     }
 
     @Test
-    @DisplayName("투표 삭제 실패하는 경우")
+    @DisplayName("투표 삭제 실패")
     void deleteIfThrow() {
         // given
         given(voteRepository.findById(anyLong())).willReturn(Optional.empty());
@@ -276,6 +278,28 @@ class VoteServiceTest {
 
         // then
         Assertions.assertThat(votingResponseDto).usingRecursiveComparison().isEqualTo(expectedVotingResponseDto);
+    }
+
+    @Test
+    @DisplayName("투표 하기 실패")
+    void BadVoting() {
+        // given
+        Long voteId = 1L;
+        LocalDateTime expiredDateTime = LocalDateTime.now().minusDays(1); // 1일 전에 만료된 투표
+        Vote vote = Vote.builder()
+                .id(voteId)
+                .title("투표 제목")
+                .startDate(LocalDate.from(LocalDateTime.now().minusDays(2)))
+                .endDate(LocalDate.from(expiredDateTime))
+                .build();
+        VotingRequestDto requestDto = new VotingRequestDto(1L, List.of(1L, 2L));
+
+        given(voteRepository.findById(voteId)).willReturn(Optional.of(vote));
+
+        // when, then
+        assertThatThrownBy(() -> voteService.voting(voteId, requestDto))
+                .isInstanceOf(InvalidEndDateException.class)
+                .hasMessage("투표 마감일을 초과한 날짜로 투표를 진행할 수 없습니다.");
     }
 
 }
