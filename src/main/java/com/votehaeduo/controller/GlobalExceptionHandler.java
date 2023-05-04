@@ -1,5 +1,6 @@
 package com.votehaeduo.controller;
 
+import com.votehaeduo.exception.date.InvalidEndDateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,15 @@ public class GlobalExceptionHandler {
                 .map(x -> x.getField() + ": " + x.getDefaultMessage())
                 .collect(Collectors.toList());
         body.put("errors", errors);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidEndDateException.class)
+    public ResponseEntity<Object> handleInvalidEndDateException(InvalidEndDateException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", new Date());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("errorMessage", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 

@@ -6,12 +6,14 @@ import com.votehaeduo.dto.response.*;
 import com.votehaeduo.dto.request.VoteCreateRequestDto;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.exception.date.InvalidEndDateException;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,8 +80,14 @@ public class VoteService {
 
     @Transactional
     public VotingResponseDto voting(Long id, VotingRequestDto votingRequestDto) {
-        // 투표하기 기능의 투표 정보
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
+
+        // 날짜 유효성 검사
+        if (LocalDate.now().isAfter(vote.getEndDate())) {
+            throw new InvalidEndDateException();
+        }
+
+        // 투표하기 기능의 투표 정보
         votingRequestDto.getVoteItemId().forEach(itemId ->
                 vote.getVoteItems().stream()
                         .filter(voteItem -> voteItem.getId().equals(itemId))
