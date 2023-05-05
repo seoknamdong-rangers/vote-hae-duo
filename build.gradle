@@ -30,6 +30,9 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
 
+    // swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     //runtimeOnly 'com.mysql:mysql-connector-j'

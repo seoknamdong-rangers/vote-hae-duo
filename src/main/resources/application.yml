@@ -1,4 +1,7 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
   # H2 Setting Info (H2 Console에 접속하기 위한 설정정보 입력)
   h2:
     console:
