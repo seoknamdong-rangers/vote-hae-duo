@@ -2,6 +2,9 @@ package com.votehaeduo.service;
 
 import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
+import com.votehaeduo.entity.Comment;
+import com.votehaeduo.dto.request.*;
+import com.votehaeduo.dto.response.*;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
 import com.votehaeduo.exception.date.InvalidEndDateException;
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -300,6 +304,135 @@ class VoteServiceTest {
         assertThatThrownBy(() -> voteService.voting(voteId, requestDto))
                 .isInstanceOf(InvalidEndDateException.class)
                 .hasMessage("투표 마감일을 초과한 날짜로 투표를 진행할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("댓글 등록")
+    void insertComment() {
+        // given
+        Vote findVote = Vote.builder()
+                .id(1L)
+                .title("5월 22일 풋살 투표")
+                .startDate(LocalDate.of(2023, 5, 22))
+                .endDate(LocalDate.of(2023, 5, 31))
+                .createdBy("성준")
+                .build();
+        given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
+        Vote saveVote = Vote.builder()
+                .id(1L)
+                .title("5월 22일 풋살 투표")
+                .startDate(LocalDate.of(2023, 5, 22))
+                .endDate(LocalDate.of(2023, 5, 31))
+                .createdBy("성준")
+                .comments(List.of(Comment.builder()
+                        .id(1L)
+                        .createdBy("성준")
+                        .content("재밌겠다")
+                        .memberId(1L)
+                        .date(LocalDate.of(2023, 5, 22))
+                        .build()))
+                .build();
+        given(voteRepository.save(any())).willReturn(saveVote);
+        List<Long> commentsIds = saveVote.getComments().stream()
+                .map(Comment::getId)
+                .sorted()
+                .collect(Collectors.toList());
+        Long lastCommentId = commentsIds.get(commentsIds.size() - 1);
+        CreateCommentResponseDto expectedResult = CreateCommentResponseDto.of(saveVote, lastCommentId);
+
+        // when
+        CreateCommentResponseDto createCommentResponseDto = voteService.createComment(1L, CreateCommentRequestDto.builder()
+                .createdBy("성준")
+                .content("재밌겠다")
+                .memberId(1L)
+                .date(LocalDate.of(2023, 5, 22))
+                .build());
+
+        // then
+        Assertions.assertThat(createCommentResponseDto).usingRecursiveComparison().isEqualTo(expectedResult);
+
+    }
+
+    @Test
+    @DisplayName("댓글 등록 실패")
+    void insertFailedComment() {
+        // given
+        Long id = new Random().nextLong();
+        Vote findVote = Vote.builder()
+                .id(id)
+                .title("5월 22일 풋살 투표")
+                .startDate(LocalDate.of(2023, 4, 10))
+                .endDate(LocalDate.of(2023, 4, 20))
+                .createdBy("성준")
+                .build();
+        given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
+        CreateCommentRequestDto commentRequestDto = new CreateCommentRequestDto();
+
+        // when, then
+        assertThatThrownBy(() -> voteService.createComment(id, commentRequestDto))
+                .isInstanceOf(InvalidEndDateException.class)
+                .hasMessage("투표 마감일을 초과한 날짜로 진행할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("댓글 삭제")
+    void deleteComment() {
+        // given
+        Long id = new Random().nextLong();
+        Vote findVote = Vote.builder()
+                .id(id)
+                .title("5월 22일 풋살 투표")
+                .startDate(LocalDate.of(2023, 5, 22))
+                .endDate(LocalDate.of(2023, 5, 31))
+                .createdBy("성준")
+                .comments(List.of(Comment.builder()
+                        .id(1L)
+                        .createdBy("성준")
+                        .content("재밌겠다")
+                        .memberId(1L)
+                        .date(LocalDate.of(2023, 5, 22))
+                        .build()))
+                .build();
+        given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
+        Vote saveVote = Vote.builder()
+                .id(id)
+                .title("5월 22일 풋살 투표")
+                .startDate(LocalDate.of(2023, 5, 22))
+                .endDate(LocalDate.of(2023, 5, 31))
+                .createdBy("성준")
+                .build();
+        given(voteRepository.save(any())).willReturn(saveVote);
+
+        // when
+        boolean result = voteService.deleteComment(id,
+                DeleteCommentRequestDto.builder()
+                        .commentId(id)
+                        .memberId(1L)
+                        .build());
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 실패")
+    void deleteFailedComment() {
+        // given
+        Long id = new Random().nextLong();
+        Vote findVote = Vote.builder()
+                .id(id)
+                .title("5월 22일 풋살 투표")
+                .startDate(LocalDate.of(2023, 4, 10))
+                .endDate(LocalDate.of(2023, 4, 20))
+                .createdBy("성준")
+                .build();
+        given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
+        DeleteCommentRequestDto deleteCommentRequestDto = new DeleteCommentRequestDto(1L, 1L);
+
+        // when, then
+        assertThatThrownBy(() -> voteService.deleteComment(id, deleteCommentRequestDto))
+                .isInstanceOf(CommentNotFoundException.class)
+                .hasMessage("댓글을 찾을 수 없습니다.");
     }
 
 }
