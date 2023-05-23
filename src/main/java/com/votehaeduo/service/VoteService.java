@@ -1,11 +1,20 @@
 package com.votehaeduo.service;
 
+import com.votehaeduo.dto.request.CreateCommentRequestDto;
+import com.votehaeduo.dto.request.DeleteCommentRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.request.VotingRequestDto;
 import com.votehaeduo.dto.response.*;
+import com.votehaeduo.dto.response.*;
 import com.votehaeduo.dto.request.VoteCreateRequestDto;
+import com.votehaeduo.entity.Comment;
+import com.votehaeduo.entity.Comment;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.exception.comment.CommentNotFoundException;
+import com.votehaeduo.exception.date.InvalidEndDateException;
+import com.votehaeduo.exception.date.InvalidEndDateException;
+import com.votehaeduo.exception.comment.CommentNotFoundException;
 import com.votehaeduo.exception.date.InvalidEndDateException;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;
@@ -13,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,13 +35,13 @@ public class VoteService {
 
     private final VoteRepository voteRepository;
 
-    //등록
+    // 등록
     @Transactional
     public VoteCreateResponseDto create(VoteCreateRequestDto voteCreateRequestDto) {
         return VoteCreateResponseDto.from(voteRepository.save(voteCreateRequestDto.toEntity()));
     }
 
-    //전체조회
+    // 전체조회
     @Transactional(readOnly = true)
     public List<FindVoteResponseDto> findAll() {
         return voteRepository.findAll().stream()
@@ -41,14 +53,18 @@ public class VoteService {
                 .collect(Collectors.toList());
     }
 
-    //상세조회
+    // 상세조회
     @Transactional
-    public VoteResponseDto findById(Long id) {
+    public FindByIdVoteResponse findById(Long id) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
-        return VoteResponseDto.from(vote);
+        return FindByIdVoteResponse.of(vote, (long) vote.getVoteItems().stream()
+                .map(VoteItem::getMemberIds)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet())
+                .size());
     }
 
-    //수정
+    // 수정
     @Transactional
     public VoteResponseDto update(Long id, VoteUpdateRequestDto voteUpdateRequestDto) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
@@ -70,7 +86,7 @@ public class VoteService {
         return VoteResponseDto.from(voteRepository.save(vote));
     }
 
-    //삭제
+    // 삭제
     @Transactional
     public boolean delete(Long id) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
@@ -108,6 +124,47 @@ public class VoteService {
                 voteItemParticipantIds.stream()
                         .map(VoteMemberResponseDto::from)
                         .collect(Collectors.toList()));
+    }
+
+
+    // 댓글 등록
+    // @Transactional
+    public CreateCommentResponseDto createComment(Long id, CreateCommentRequestDto createCommentRequestDto) {
+        Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
+        // 날짜 유효성 검사
+        if (LocalDate.now().isAfter(vote.getEndDate())) {
+            throw new InvalidEndDateException();
+        }
+
+        // 댓글 등록
+        vote.addComments(createCommentRequestDto.toEntity());
+        vote = voteRepository.save(vote);
+
+        System.out.println(vote.getComments());
+
+        // 등록한 댓글 찾기
+        List<Long> commentsIds = vote.getComments().stream()
+                .map(Comment::getId)
+                .sorted()
+                .collect(Collectors.toList());
+        Long lastCommentId = commentsIds.get(commentsIds.size() - 1);
+        return CreateCommentResponseDto.of(vote, lastCommentId);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public boolean deleteComment(Long voteId, DeleteCommentRequestDto deleteCommentRequestDto) {
+        Vote vote = voteRepository.findById(voteId).orElseThrow(VoteNotFoundException::new);
+        // 유효성 검사
+        long count = vote.getComments().stream()
+                .filter(comment -> comment.getMemberId().equals(deleteCommentRequestDto.getMemberId()))
+                .count();
+        if (count == 0) {
+            throw new CommentNotFoundException();
+        }
+        vote.deleteComment(deleteCommentRequestDto);
+        voteRepository.save(vote);
+        return true;
     }
 
 }
