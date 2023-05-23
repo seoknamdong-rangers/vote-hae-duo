@@ -128,7 +128,7 @@ public class VoteService {
 
 
     // 댓글 등록
-    // @Transactional
+    @Transactional
     public CreateCommentResponseDto createComment(Long id, CreateCommentRequestDto createCommentRequestDto) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
         // 날짜 유효성 검사
