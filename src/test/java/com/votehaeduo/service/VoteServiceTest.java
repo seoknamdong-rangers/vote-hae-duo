@@ -7,6 +7,7 @@ import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.exception.comment.CommentNotFoundException;
 import com.votehaeduo.exception.date.InvalidEndDateException;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
 import com.votehaeduo.repository.VoteRepository;

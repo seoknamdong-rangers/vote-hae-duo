@@ -290,9 +290,9 @@ class VoteControllerTest {
     @DisplayName("댓글 삭제")
     void deleteComment() throws Exception {
         // given
-        given(voteService.deleteComment(any(),any())).willReturn(true);
+        given(voteService.deleteComment(any(), any())).willReturn(true);
 
-        DeleteCommentRequestDto expectedDeleteCommentRequestDto = new DeleteCommentRequestDto(1L,1L);
+        DeleteCommentRequestDto expectedDeleteCommentRequestDto = new DeleteCommentRequestDto(1L, 1L);
         String deleteCommentRequestDto = objectMapper.writeValueAsString(expectedDeleteCommentRequestDto);
 
         // when & then
