@@ -16,12 +16,14 @@ public class VoteItemResponseDto {
     private Long id;
     private String title;
     private Set<Long> memberIds;
+    private Long uniqueCount;
 
     public static VoteItemResponseDto from(VoteItem voteItem) {
         return new VoteItemResponseDto(
                 voteItem.getId(),
                 voteItem.getTitle(),
-                voteItem.getMemberIds()
+                voteItem.getMemberIds(),
+                (long) voteItem.getMemberIds().size()
         );
     }
 

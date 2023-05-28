@@ -3,12 +3,14 @@ package com.votehaeduo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.votehaeduo.entity.Vote;
+import com.votehaeduo.entity.VoteItem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -24,6 +26,7 @@ public class VoteResponseDto {
     private LocalDate endDate;
     private String createdBy;
     private List<VoteItemResponseDto> voteItems;
+    private Long memberTotalUniqueCount;
 
     public static VoteResponseDto from(Vote vote) {
         return new VoteResponseDto(
@@ -34,8 +37,12 @@ public class VoteResponseDto {
                 vote.getCreatedBy(),
                 vote.getVoteItems().stream()
                         .map(VoteItemResponseDto::from)
-                        .collect(Collectors.toList())
-        );
+                        .collect(Collectors.toList()),
+                (long) vote.getVoteItems().stream()
+                        .map(VoteItem::getMemberIds)
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toSet())
+                        .size());
     }
 
 }

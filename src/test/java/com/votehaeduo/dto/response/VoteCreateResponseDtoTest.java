@@ -39,11 +39,11 @@ class VoteCreateResponseDtoTest {
                         .title("item_title2")
                         .build());
         vote.addItems(voteItems);
-        VoteCreateResponseDto expected = new VoteCreateResponseDto(id, "title",
+        VoteCreateResponseDto expected = new VoteCreateResponseDto(new VotePayloadResponseDto(id, "title",
                 LocalDate.of(2023, 1, 20),
                 LocalDate.of(2023, 1, 25), "성준",
-                List.of(new VoteItemCreateResponseDto(1L, "item_title"),
-                        new VoteItemCreateResponseDto(2L, "item_title2")));
+                List.of(new VoteItemPayloadResponseDto(1L, "item_title"),
+                        new VoteItemPayloadResponseDto(2L, "item_title2"))));
 
         // when
         VoteCreateResponseDto result = VoteCreateResponseDto.from(vote);

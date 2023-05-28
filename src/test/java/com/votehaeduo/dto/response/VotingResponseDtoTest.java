@@ -2,10 +2,7 @@ package com.votehaeduo.dto.response;
 
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,12 +11,10 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
-class VoteResponseDtoTest {
+class VotingResponseDtoTest {
 
     @Test
-    @DisplayName("voteResponseDto 생성 테스트")
-    void from() {
+    void of() {
         // given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()
@@ -33,24 +28,32 @@ class VoteResponseDtoTest {
                         .id(1L)
                         .vote(vote)
                         .title("item_title")
-                        .memberIds(Set.of(1L))
                         .build(),
                 VoteItem.builder()
                         .id(2L)
                         .vote(vote)
                         .title("item_title2")
-                        .memberIds(Set.of(1L))
                         .build());
         vote.addItems(voteItems);
-        VoteResponseDto expected = new VoteResponseDto(id, "title",
-                LocalDate.of(2023, 1, 20),
-                LocalDate.of(2023, 1, 25), "성준",
-                List.of(new VoteItemResponseDto(1L, "item_title", Set.of(1L), 1L),
-                        new VoteItemResponseDto(2L, "item_title2", Set.of(1L), 1L)),
-                1L);
+
+        VoteMemberResponseDto uniqueCount = new VoteMemberResponseDto(Set.of(1L, 2L, 3L), 3L);
+
+        List<VoteMemberResponseDto> uniqueCountByVoteItem = List.of(
+                new VoteMemberResponseDto(Set.of(1L, 2L), 2L),
+                new VoteMemberResponseDto(Set.of(3L), 1L));
+
+        VotingResponseDto expected = new VotingResponseDto(
+                new VotePayloadResponseDto(id, "title",
+                        LocalDate.of(2023, 1, 20),
+                        LocalDate.of(2023, 1, 25), "성준",
+                        List.of(new VoteItemPayloadResponseDto(1L, "item_title"),
+                                new VoteItemPayloadResponseDto(2L, "item_title2"))),
+                new VoteMemberResponseDto(Set.of(1L, 2L, 3L), 3L),
+                List.of(new VoteMemberResponseDto(Set.of(1L, 2L), 2L),
+                        new VoteMemberResponseDto(Set.of(3L), 1L)));
 
         // when
-        VoteResponseDto result = VoteResponseDto.from(vote);
+        VotingResponseDto result = VotingResponseDto.of(vote, uniqueCount, uniqueCountByVoteItem);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

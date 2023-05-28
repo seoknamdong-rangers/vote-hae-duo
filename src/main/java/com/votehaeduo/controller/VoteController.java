@@ -2,9 +2,11 @@ package com.votehaeduo.controller;
 
 import com.votehaeduo.dto.request.VoteCreateRequestDto;
 import com.votehaeduo.dto.request.VoteUpdateRequestDto;
+import com.votehaeduo.dto.request.VotingRequestDto;
 import com.votehaeduo.dto.response.FindVoteResponseDto;
 import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
+import com.votehaeduo.dto.response.VotingResponseDto;
 import com.votehaeduo.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -48,6 +50,13 @@ public class VoteController {
     @DeleteMapping("/{voteId}")
     public boolean delete(@PathVariable("voteId") Long id) {
         return voteService.delete(id);
+    }
+
+    // 투표하기
+    @PostMapping("{voteId}")
+    public VotingResponseDto voting(@PathVariable("voteId") Long id,
+                                    @RequestBody VotingRequestDto votingRequestDto) {
+        return voteService.voting(id, votingRequestDto);
     }
 
 }

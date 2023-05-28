@@ -5,17 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteCreateResponseDto {
+public class VotingResponseDto {
 
     private VotePayloadResponseDto votePayloadResponseDto;
+    private VoteMemberResponseDto uniqueCount;
+    private List<VoteMemberResponseDto> uniqueCountByVoteItem;
 
-    public static VoteCreateResponseDto from(Vote vote) {
-        return new VoteCreateResponseDto(
+    public static VotingResponseDto of(Vote vote, VoteMemberResponseDto uniqueCount,
+                                       List<VoteMemberResponseDto> uniqueCountByVoteItem) {
+        return new VotingResponseDto(
                 new VotePayloadResponseDto(
                         vote.getId(),
                         vote.getTitle(),
@@ -24,9 +28,9 @@ public class VoteCreateResponseDto {
                         vote.getCreatedBy(),
                         vote.getVoteItems().stream()
                                 .map(VoteItemPayloadResponseDto::from)
-                                .collect(Collectors.toList())
-                )
-        );
+                                .collect(Collectors.toList())),
+                uniqueCount,
+                uniqueCountByVoteItem);
     }
 
 }
