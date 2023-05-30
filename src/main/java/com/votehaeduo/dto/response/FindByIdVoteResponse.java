@@ -1,22 +1,19 @@
 package com.votehaeduo.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.votehaeduo.entity.Comment;
 import com.votehaeduo.entity.Vote;
-import com.votehaeduo.entity.VoteItem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteResponseDto {
+public class FindByIdVoteResponse {
 
     private Long id;
     private String title;
@@ -26,10 +23,11 @@ public class VoteResponseDto {
     private LocalDate endDate;
     private String createdBy;
     private List<VoteItemResponseDto> voteItems;
-    private Long memberTotalUniqueCount;
+    private List<FindCommentResponseDto> comments;
+    private Long uniqueCount;
 
-    public static VoteResponseDto from(Vote vote) {
-        return new VoteResponseDto(
+    public static FindByIdVoteResponse of(Vote vote, Long uniqueCount) {
+        return new FindByIdVoteResponse(
                 vote.getId(),
                 vote.getTitle(),
                 vote.getStartDate(),
@@ -38,11 +36,11 @@ public class VoteResponseDto {
                 vote.getVoteItems().stream()
                         .map(VoteItemResponseDto::from)
                         .collect(Collectors.toList()),
-                (long) vote.getVoteItems().stream()
-                        .map(VoteItem::getMemberIds)
-                        .flatMap(Set::stream)
-                        .collect(Collectors.toSet())
-                        .size());
+                vote.getComments().stream()
+                        .map(FindCommentResponseDto::from)
+                        .collect(Collectors.toList()),
+                uniqueCount
+        );
     }
 
 }

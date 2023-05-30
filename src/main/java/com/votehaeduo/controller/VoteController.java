@@ -1,12 +1,15 @@
 package com.votehaeduo.controller;
 
-import com.votehaeduo.dto.request.VoteCreateRequestDto;
-import com.votehaeduo.dto.request.VoteUpdateRequestDto;
 import com.votehaeduo.dto.request.VotingRequestDto;
 import com.votehaeduo.dto.response.FindVoteResponseDto;
 import com.votehaeduo.dto.response.VoteCreateResponseDto;
 import com.votehaeduo.dto.response.VoteResponseDto;
 import com.votehaeduo.dto.response.VotingResponseDto;
+import com.votehaeduo.dto.request.CreateCommentRequestDto;
+import com.votehaeduo.dto.request.DeleteCommentRequestDto;
+import com.votehaeduo.dto.request.VoteCreateRequestDto;
+import com.votehaeduo.dto.request.VoteUpdateRequestDto;
+import com.votehaeduo.dto.response.*;
 import com.votehaeduo.service.VoteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,13 +32,13 @@ public class VoteController {
 
     //투표 전체 조회
     @GetMapping
-    public List<FindVoteResponseDto> findAll() { //페이지를 리턴 하는게 맞음
+    public List<FindVoteResponseDto> findAll() {
         return voteService.findAll();
     }
 
     //투표 상세 조회
     @GetMapping("/{voteId}")
-    public VoteResponseDto findById(@PathVariable("voteId") Long id) {
+    public FindByIdVoteResponse findById(@PathVariable("voteId") Long id) {
         return voteService.findById(id);
     }
 
@@ -57,6 +60,20 @@ public class VoteController {
     public VotingResponseDto voting(@PathVariable("voteId") Long id,
                                     @RequestBody VotingRequestDto votingRequestDto) {
         return voteService.voting(id, votingRequestDto);
+    }
+
+    // 댓글 등록
+    @PostMapping("/{voteId}")
+    public CreateCommentResponseDto createComment(@PathVariable("voteId") Long id,
+                                                  @RequestBody @Valid final CreateCommentRequestDto createCommentRequestDto) {
+        return voteService.createComment(id, createCommentRequestDto);
+    }
+
+    // 댓글 삭제
+    @DeleteMapping("/{voteId}/{commentId}")
+    public boolean deleteComment(@PathVariable("voteId") Long voteId,
+                                 @RequestBody DeleteCommentRequestDto deleteCommentRequestDto) {
+        return voteService.deleteComment(voteId, deleteCommentRequestDto);
     }
 
 }

@@ -2,6 +2,10 @@ package com.votehaeduo.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.votehaeduo.dto.request.CreateCommentRequestDto;
+import com.votehaeduo.dto.request.DeleteCommentRequestDto;
+import com.votehaeduo.dto.request.VoteCreateRequestDto;
+import com.votehaeduo.dto.response.*;
 import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
 import com.votehaeduo.service.VoteService;
@@ -256,6 +260,48 @@ class VoteControllerTest {
                 .andExpect(jsonPath("$.uniqueCountByVoteItem.[0].uniqueCount").value(2L))
                 .andExpect(jsonPath("$.uniqueCountByVoteItem.[1].memberIds[*]").value(containsInAnyOrder(1)))
                 .andExpect(jsonPath("$.uniqueCountByVoteItem.[1].uniqueCount").value(1L));
+    }
+
+    @Test
+    @DisplayName("댓글 등록")
+    void insertComment() throws Exception {
+        // given
+        CreateCommentResponseDto expectedCreateCommentResponseDto = new CreateCommentResponseDto(1L, "재밌겠다",
+                LocalDate.of(2023, 5, 19), "성준", 1L);
+        given(voteService.createComment(any(), any())).willReturn(expectedCreateCommentResponseDto);
+
+        CreateCommentRequestDto expectedCreateCommentRequestDto = new CreateCommentRequestDto("성준",
+                LocalDate.of(2023, 5, 19), "성준", 1L);
+        String createCommentRequestDto = objectMapper.writeValueAsString(expectedCreateCommentRequestDto);
+
+        // when & then
+        mvc.perform(post("/api/votes/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createCommentRequestDto))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.content").value("재밌겠다"))
+                .andExpect(jsonPath("$.date").value("2023-05-19"))
+                .andExpect(jsonPath("$.createdBy").value("성준"))
+                .andExpect(jsonPath("$.memberId").value(1));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제")
+    void deleteComment() throws Exception {
+        // given
+        given(voteService.deleteComment(any(), any())).willReturn(true);
+
+        DeleteCommentRequestDto expectedDeleteCommentRequestDto = new DeleteCommentRequestDto(1L, 1L);
+        String deleteCommentRequestDto = objectMapper.writeValueAsString(expectedDeleteCommentRequestDto);
+
+        // when & then
+        mvc.perform(delete("/api/votes/1/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(deleteCommentRequestDto))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().string("true"));
     }
 
 }
