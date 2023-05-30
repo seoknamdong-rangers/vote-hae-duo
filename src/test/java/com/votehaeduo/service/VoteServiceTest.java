@@ -3,8 +3,6 @@ package com.votehaeduo.service;
 import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
 import com.votehaeduo.entity.Comment;
-import com.votehaeduo.dto.request.*;
-import com.votehaeduo.dto.response.*;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
 import com.votehaeduo.exception.comment.CommentNotFoundException;
@@ -156,7 +154,7 @@ class VoteServiceTest {
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
 
         // when
-        VoteResponseDto voteResponseDto = voteService.findById(id);
+        FindByIdVoteResponse voteResponseDto = voteService.findById(id);
 
         // then
         Assertions.assertThat(voteResponseDto).usingRecursiveComparison().isEqualTo(expectedVoteResponseDto);
