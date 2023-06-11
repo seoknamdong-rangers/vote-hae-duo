@@ -1,5 +1,6 @@
 package com.votehaeduo.dto.response;
 
+import com.votehaeduo.dto.VoteItemDetails;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +16,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class VoteResponseDtoTest {
+class UpdateVoteResponseTest {
 
     @Test
     @DisplayName("voteResponseDto 생성 테스트")
@@ -27,7 +28,7 @@ class VoteResponseDtoTest {
                 .title("title")
                 .startDate(LocalDate.of(2023, 1, 20))
                 .endDate(LocalDate.of(2023, 1, 25))
-                .createdBy("성준")
+                .createdMemberId(1L)
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
                         .id(1L)
@@ -42,15 +43,15 @@ class VoteResponseDtoTest {
                         .memberIds(Set.of(1L))
                         .build());
         vote.addItems(voteItems);
-        VoteResponseDto expected = new VoteResponseDto(id, "title",
+        UpdateVoteResponse expected = new UpdateVoteResponse(id, "title",
                 LocalDate.of(2023, 1, 20),
-                LocalDate.of(2023, 1, 25), "성준",
-                List.of(new VoteItemResponseDto(1L, "item_title", Set.of(1L), 1L),
-                        new VoteItemResponseDto(2L, "item_title2", Set.of(1L), 1L)),
+                LocalDate.of(2023, 1, 25), 1L,
+                List.of(new VoteItemDetails(1L, "item_title", Set.of(1L), 1L),
+                        new VoteItemDetails(2L, "item_title2", Set.of(1L), 1L)),
                 1L);
 
         // when
-        VoteResponseDto result = VoteResponseDto.from(vote);
+        UpdateVoteResponse result = UpdateVoteResponse.from(vote);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

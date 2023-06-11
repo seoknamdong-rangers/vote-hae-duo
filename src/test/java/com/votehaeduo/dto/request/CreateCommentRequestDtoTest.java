@@ -17,12 +17,11 @@ class CreateCommentRequestDtoTest {
         CreateCommentRequestDto createCommentRequestDto = new CreateCommentRequestDto(
                 "정말 재밌다..",
                 LocalDate.of(2023, 5, 23),
-                "성준",
                 1L);
         Comment expected = Comment.builder()
                 .content("정말 재밌다..")
                 .date(LocalDate.of(2023, 5, 23))
-                .createdBy("성준")
+                .memberId(1L)
                 .memberId(1L)
                 .build();
 

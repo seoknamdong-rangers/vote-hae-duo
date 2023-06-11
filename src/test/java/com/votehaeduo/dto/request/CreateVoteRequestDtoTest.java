@@ -1,5 +1,6 @@
 package com.votehaeduo.dto.request;
 
+import com.votehaeduo.dto.CreateVoteItem;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
 import org.junit.jupiter.api.DisplayName;
@@ -10,22 +11,22 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VoteCreateRequestDtoTest {
+class CreateVoteRequestDtoTest {
 
     @Test
     @DisplayName("VoteCreateRequestDtoTest toEntity 테스트")
     void toEntity() {
         // given
-        VoteCreateRequestDto voteCreateRequestDto = new VoteCreateRequestDto("12월 28일 풋살 투표",
+        CreateVoteRequestDto createVoteRequestDto = new CreateVoteRequestDto("12월 28일 풋살 투표",
                 LocalDate.of(2023, 2, 9),
-                LocalDate.of(2023, 2, 19), "성준",
-                List.of(new VoteItemCreateRequestDto("11시 ~ 1시"),
-                        new VoteItemCreateRequestDto("12시 ~ 2시")));
+                LocalDate.of(2023, 2, 19), 1L,
+                List.of(new CreateVoteItem("11시 ~ 1시"),
+                        new CreateVoteItem("12시 ~ 2시")));
         Vote expected = Vote.builder()
                 .title("12월 28일 풋살 투표")
                 .startDate(LocalDate.of(2023, 2, 9))
                 .endDate(LocalDate.of(2023, 2, 19))
-                .createdBy("성준")
+                .createdMemberId(1L)
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
                         .title("11시 ~ 1시")
@@ -38,7 +39,7 @@ class VoteCreateRequestDtoTest {
         expected.addItems(voteItems);
 
         // when
-        Vote result = voteCreateRequestDto.toEntity();
+        Vote result = createVoteRequestDto.toEntity();
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

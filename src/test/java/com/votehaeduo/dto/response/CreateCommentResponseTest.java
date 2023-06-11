@@ -11,11 +11,11 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CreateCommentResponseDtoTest {
+class CreateCommentResponseTest {
 
     @Test
-    @DisplayName("CreateCommentResponseDto of Test")
-    void of() {
+    @DisplayName("CreateCommentResponseDto from Test")
+    void from() {
         // given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()
@@ -24,16 +24,16 @@ class CreateCommentResponseDtoTest {
                         .id(id)
                         .content("정말 재밌다..")
                         .date(LocalDate.of(2023, 5, 23))
-                        .createdBy("성준")
+                        .nickname("성준")
                         .memberId(1L)
                         .build()))
                 .build();
-        CreateCommentResponseDto expected = new CreateCommentResponseDto(
+        CreateCommentResponse expected = new CreateCommentResponse(
                 id, "정말 재밌다..", LocalDate.of(2023, 5, 23),
                 "성준", 1L);
 
         // when
-        CreateCommentResponseDto result = CreateCommentResponseDto.of(vote, id);
+        CreateCommentResponse result = CreateCommentResponse.from(vote.getLastComment());
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

@@ -1,4 +1,4 @@
-package com.votehaeduo.dto.request;
+package com.votehaeduo.dto;
 
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
@@ -13,13 +13,21 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteItemUpdateRequestDto {
+public class VoteItemPayload {
 
     private Long id;
     private String title;
     private Set<Long> memberIds;
 
-    public VoteItem toEntity(Vote vote) { // 필드에 memberIds 를 만들까?
+    public static VoteItemPayload from(VoteItem voteItem) {
+        return new VoteItemPayload(
+                voteItem.getId(),
+                voteItem.getTitle(),
+                voteItem.getMemberIds()
+        );
+    }
+
+    public VoteItem toEntity(Vote vote) {
         return VoteItem.builder()
                 .id(id)
                 .title(title)
