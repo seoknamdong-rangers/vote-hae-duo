@@ -1,35 +1,30 @@
 package com.votehaeduo.dto.request;
 
+import com.votehaeduo.dto.CreateVoteItem;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Set;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VoteItemUpdateRequestDtoTest {
+class CreateVoteItemTest {
 
     @Test
-    @DisplayName("VoteItemUpdateRequestDto toEntity 테스트")
+    @DisplayName("VoteItemCreateRequestDto toEntity 테스트")
     void toEntity() {
         // given
         Vote vote = Vote.builder().build();
-        VoteItemUpdateRequestDto voteItemUpdateRequestDto = VoteItemUpdateRequestDto.builder()
-                .id(1L)
+        CreateVoteItem createVoteItem = CreateVoteItem.builder()
                 .title("9시 ~ 11시")
-                .memberIds(Set.of(1L, 2L))
                 .build();
         VoteItem expected = VoteItem.builder()
-                .id(1L)
                 .title("9시 ~ 11시")
                 .vote(vote)
-                .memberIds(Set.of(1L, 2L))
                 .build();
 
         // when
-        VoteItem result = voteItemUpdateRequestDto.toEntity(vote);
+        VoteItem result = createVoteItem.toEntity(vote);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

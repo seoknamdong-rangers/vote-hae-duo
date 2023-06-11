@@ -1,5 +1,7 @@
 package com.votehaeduo.dto.response;
 
+import com.votehaeduo.dto.CommentPayload;
+import com.votehaeduo.dto.VoteItemDetails;
 import com.votehaeduo.entity.Comment;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
@@ -25,12 +27,12 @@ class FindByIdVoteResponseTest {
                 .title("풋살")
                 .startDate(LocalDate.of(2023, 5, 23))
                 .endDate(LocalDate.of(2023, 5, 28))
-                .createdBy("성준")
+                .createdMemberId(1L)
                 .comments(List.of(Comment.builder()
                         .id(1L)
                         .content("정말 재밌다..")
                         .date(LocalDate.of(2023, 5, 23))
-                        .createdBy("성준")
+                        .nickname("킴대세")
                         .memberId(1L)
                         .build()))
                 .build();
@@ -41,14 +43,12 @@ class FindByIdVoteResponseTest {
                 .memberIds(Set.of(1L, 2L))
                 .build());
         vote.addItems(voteItems);
-        FindByIdVoteResponse expected = new FindByIdVoteResponse(
-                id, "풋살",
+        FindByIdVoteResponse expected = new FindByIdVoteResponse(id, "풋살",
                 LocalDate.of(2023, 5, 23),
-                LocalDate.of(2023, 5, 28),
-                "성준",
-                List.of(new VoteItemResponseDto(1L, "item_name", Set.of(1L, 2L))),
-                List.of(new FindCommentResponseDto(1L, "정말 재밌다..", "성준", LocalDate.of(2023, 5, 23))),
-                2L);
+                LocalDate.of(2023, 5, 28), 1L,
+                List.of(new VoteItemDetails(1L, "item_name", Set.of(1L, 2L), 2L)),
+                List.of(new CommentPayload(1L, "정말 재밌다..", "킴대세",
+                        LocalDate.of(2023, 5, 23), 1L)), 2L);
 
         // when
         FindByIdVoteResponse result = FindByIdVoteResponse.of(vote, 2L);

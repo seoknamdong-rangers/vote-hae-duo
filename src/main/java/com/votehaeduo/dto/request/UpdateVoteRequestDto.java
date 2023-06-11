@@ -1,5 +1,6 @@
 package com.votehaeduo.dto.request;
 
+import com.votehaeduo.dto.VoteItemPayload;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,12 +13,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteUpdateRequestDto {
+public class UpdateVoteRequestDto {
 
     private String title;
-    private LocalDate startDate;
     private LocalDate endDate;
-    private String createdBy;
-    private List<VoteItemUpdateRequestDto> voteItems;
+    private List<VoteItemPayload> voteItems;
 
 }

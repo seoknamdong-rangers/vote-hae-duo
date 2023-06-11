@@ -1,20 +1,24 @@
 package com.votehaeduo.dto.response;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.votehaeduo.dto.VoteItemDetails;
 import com.votehaeduo.entity.Vote;
+import com.votehaeduo.entity.VoteItem;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindVoteResponseDto {
+public class UpdateVoteResponse {
 
     private Long id;
     private String title;
@@ -22,22 +26,25 @@ public class FindVoteResponseDto {
     private LocalDate startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDate endDate;
-    private String createdBy;
-    private List<FindVoteItemResponseDto> voteItems;
+    private Long createdMemberId;
+    private List<VoteItemDetails> voteItems;
     private Long uniqueCount;
 
-    public static FindVoteResponseDto of(Vote vote, Long uniqueCount) {
-        return new FindVoteResponseDto(
+    public static UpdateVoteResponse from(Vote vote) {
+        return new UpdateVoteResponse(
                 vote.getId(),
                 vote.getTitle(),
                 vote.getStartDate(),
                 vote.getEndDate(),
-                vote.getCreatedBy(),
+                vote.getCreatedMemberId(),
                 vote.getVoteItems().stream()
-                        .map(FindVoteItemResponseDto::from)
+                        .map(VoteItemDetails::from)
                         .collect(Collectors.toList()),
-                uniqueCount
-        );
+                (long) vote.getVoteItems().stream()
+                        .map(VoteItem::getMemberIds)
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toSet())
+                        .size());
     }
 
 }

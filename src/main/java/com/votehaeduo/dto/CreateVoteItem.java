@@ -1,4 +1,4 @@
-package com.votehaeduo.dto.request;
+package com.votehaeduo.dto;
 
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class VoteItemCreateRequestDto {
+public class CreateVoteItem {
 
     @NotBlank(message = "투표 항목의 제목은 공백이 아니어야 합니다.")
     private String title;

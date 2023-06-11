@@ -1,12 +1,14 @@
 package com.votehaeduo.entity;
 
-import com.votehaeduo.dto.request.DeleteCommentRequestDto;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -26,7 +28,7 @@ public class Vote {
 
     private LocalDate endDate;
 
-    private String createdBy;
+    private Long createdMemberId;
 
     @Builder.Default
     @OneToMany(
@@ -50,14 +52,27 @@ public class Vote {
         this.voteItems.addAll(items);
     }
 
+    // 투표 참여 전체 인원 id
+    public Set<Long> getVoteParticipantsTotalMemberIds() {
+        return voteItems.stream()
+                .flatMap(voteItem -> voteItem.getMemberIds().stream())
+                .collect(Collectors.toSet());
+    }
+
     public void addComments(Comment comment) {
         comment.setVote(this);
         this.comments.add(comment);
     }
 
-    public void deleteComment(DeleteCommentRequestDto deleteCommentRequestDto) {
+    public Comment getLastComment() {
+        return comments.stream()
+                .max(Comparator.comparing(Comment::getId))
+                .orElse(null);
+    }
+
+    public void deleteComment(Long commentId) {
         comments.stream()
-                .filter(comment -> comment.getId().equals(deleteCommentRequestDto.getCommentId()))
+                .filter(comment -> comment.getId().equals(commentId))
                 .findFirst()
                 .ifPresent(comment -> {
                     comments.remove(comment);

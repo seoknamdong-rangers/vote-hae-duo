@@ -5,25 +5,31 @@ import com.votehaeduo.entity.VoteItem;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
-class VoteItemCreateRequestDtoTest {
+class UpdateVoteItemRequestDtoTest {
 
     @Test
-    @DisplayName("VoteItemCreateRequestDto toEntity 테스트")
+    @DisplayName("VoteItemUpdateRequestDto toEntity 테스트")
     void toEntity() {
         // given
         Vote vote = Vote.builder().build();
-        VoteItemCreateRequestDto voteItemCreateRequestDto = VoteItemCreateRequestDto.builder()
+        UpdateVoteItemRequestDto updateVoteItemRequestDto = UpdateVoteItemRequestDto.builder()
+                .id(1L)
                 .title("9시 ~ 11시")
+                .memberIds(Set.of(1L, 2L))
                 .build();
         VoteItem expected = VoteItem.builder()
+                .id(1L)
                 .title("9시 ~ 11시")
                 .vote(vote)
+                .memberIds(Set.of(1L, 2L))
                 .build();
 
         // when
-        VoteItem result = voteItemCreateRequestDto.toEntity(vote);
+        VoteItem result = updateVoteItemRequestDto.toEntity(vote);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

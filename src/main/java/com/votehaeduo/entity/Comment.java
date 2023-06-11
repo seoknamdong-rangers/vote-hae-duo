@@ -19,7 +19,7 @@ public class Comment {
 
     private String content;
 
-    private String createdBy;
+    private String nickname;
 
     private LocalDate date;
 
