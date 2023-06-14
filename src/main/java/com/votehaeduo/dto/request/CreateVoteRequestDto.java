@@ -3,7 +3,7 @@ package com.votehaeduo.dto.request;
 import com.votehaeduo.dto.CreateVoteItem;
 import com.votehaeduo.entity.Vote;
 import com.votehaeduo.entity.VoteItem;
-import lombok.AllArgsConstructor;
+import com.votehaeduo.entity.enumeration.VoteCreateOption;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class CreateVoteRequestDto {
 
     @NotBlank(message = "제목은 공백이 아니어야 합니다.")
@@ -30,12 +29,33 @@ public class CreateVoteRequestDto {
     @NotEmpty(message = "투표 항목은 공백이 아니어야 합니다.")
     private List<CreateVoteItem> voteItems;
 
+    private VoteCreateOption voteCreateOption;
+
+    public CreateVoteRequestDto(String title, LocalDate startDate, LocalDate endDate, Long createdMemberId, List<CreateVoteItem> voteItems, VoteCreateOption voteCreateOption) {
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.createdMemberId = createdMemberId;
+        this.voteItems = voteItems;
+        this.voteCreateOption = voteCreateOption;
+    }
+
+    public CreateVoteRequestDto(String title, LocalDate startDate, LocalDate endDate, Long createdMemberId, List<CreateVoteItem> voteItems) {
+        this.title = title;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.createdMemberId = createdMemberId;
+        this.voteItems = voteItems;
+        this.voteCreateOption = VoteCreateOption.MANUAL;
+    }
+
     public Vote toEntity() {
         Vote vote = Vote.builder()
                 .title(this.title)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
                 .createdMemberId(this.createdMemberId)
+                .voteCreateOption(this.voteCreateOption)
                 .build();
         List<VoteItem> items = voteItems.stream()
                 .map(voteItemCreateRequestDto -> voteItemCreateRequestDto.toEntity(vote))
