@@ -1,5 +1,6 @@
 package com.votehaeduo.entity;
 
+import com.votehaeduo.entity.enumeration.VoteCreateOption;
 import lombok.*;
 
 import javax.persistence.*;
@@ -29,6 +30,10 @@ public class Vote {
     private LocalDate endDate;
 
     private Long createdMemberId;
+
+    @Enumerated(value = EnumType.STRING)
+    @Column(name = "voteCreateOption")
+    private VoteCreateOption voteCreateOption;
 
     @Builder.Default
     @OneToMany(

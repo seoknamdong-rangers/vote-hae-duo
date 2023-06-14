@@ -66,7 +66,7 @@ class VoteControllerTest {
         given(voteService.create(any())).willReturn(expectedVoteResponseDto);
 
         CreateVoteRequestDto createVoteRequestDto = new CreateVoteRequestDto("1월 8일 풋살",
-                LocalDate.of(2023, 6, 9),
+                LocalDate.of(2023, 6, 13),
                 LocalDate.of(2023, 6, 30), 1L,
                 List.of(new CreateVoteItem("11시 ~ 1시 실외"),
                         new CreateVoteItem("12시 ~ 2시 실내")));

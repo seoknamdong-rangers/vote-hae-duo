@@ -29,6 +29,10 @@ spring:
         hibernate:
           SQL: DEBUG
           type:
+  sql:
+    init:
+      data-locations:
+        - classpath:/import.sql
 kakao:
   api:
     endpoint: "https://kauth.kakao.com"

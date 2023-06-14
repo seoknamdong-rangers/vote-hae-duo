@@ -34,7 +34,9 @@ public class VoteService {
     @Transactional
     public CreateVoteResponse create(CreateVoteRequestDto createVoteRequestDto) {
         MemberPayload memberPayload = memberService.findById(createVoteRequestDto.getCreatedMemberId());
-        return CreateVoteResponse.of(voteRepository.save(createVoteRequestDto.toEntity()), memberPayload);
+        Vote vote = createVoteRequestDto.toEntity();
+        vote = voteRepository.save(vote);
+        return CreateVoteResponse.of(vote, memberPayload);
     }
 
     // 투표 전체조회
