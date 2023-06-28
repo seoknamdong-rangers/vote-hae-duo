@@ -19,7 +19,7 @@ public class VoteScheduler {
 
     private final VoteService voteService;
 
-    // @Scheduled(cron = "*/10 * * * * *") 테스트 전요 10초 마다 실행
+    //@Scheduled(cron = "*/10 * * * * *") // 테스트 전용 10초 마다 실행
     @Scheduled(cron = "0 0 1 ? * SAT") // 매주 토요일 새벽 1시에 실행
     public void scheduleVote() {
         LocalDate startDate = LocalDate.now();

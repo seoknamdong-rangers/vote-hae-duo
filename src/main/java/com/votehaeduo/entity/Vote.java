@@ -29,10 +29,11 @@ public class Vote {
 
     private LocalDate endDate;
 
+    @Column(name = "created_member_id")
     private Long createdMemberId;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "voteCreateOption")
+    @Column(name = "vote_create_option")
     private VoteCreateOption voteCreateOption;
 
     @Builder.Default
