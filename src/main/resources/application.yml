@@ -9,7 +9,7 @@ spring:
       matching-strategy: ANT_PATH_MATCHER
 
   profiles:
-    active: prod
+    active: local
 
 kakao:
   api:
