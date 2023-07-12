@@ -1,7 +1,7 @@
 package com.votehaeduo.service.scheduler;
 
 import com.votehaeduo.dto.CreateVoteItem;
-import com.votehaeduo.dto.request.CreateVoteRequestDto;
+import com.votehaeduo.dto.request.CreateVoteRequest;
 import com.votehaeduo.entity.enumeration.VoteCreateOption;
 import com.votehaeduo.service.VoteService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class VoteScheduler {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusDays(3);
         LocalDate nextFriday = startDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
-        CreateVoteRequestDto createVoteRequestDto = CreateVoteRequestDto.builder()
+        CreateVoteRequest createVoteRequest = CreateVoteRequest.builder()
                 .title(nextFriday + " 풋살")
                 .startDate(startDate)
                 .endDate(endDate)
@@ -34,7 +34,7 @@ public class VoteScheduler {
                         new CreateVoteItem("12시 ~ 2시 실내")))
                 .voteCreateOption(VoteCreateOption.AUTO)
                 .build();
-        voteService.create(createVoteRequestDto);
+        voteService.create(createVoteRequest);
     }
 
 }

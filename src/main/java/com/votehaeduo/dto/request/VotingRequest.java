@@ -9,7 +9,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class VotingRequestDto {
+public class VotingRequest {
 
     private Long memberId;
 

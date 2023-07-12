@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeleteCommentRequestDto {
+public class DeleteCommentRequest {
 
     @NotNull(message = "사용자 id는 필수 입니다.")
     private Long memberId;

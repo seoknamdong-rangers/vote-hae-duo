@@ -1,15 +1,10 @@
 package com.votehaeduo.service;
 
+import com.votehaeduo.dto.CreateTeamPayload;
 import com.votehaeduo.dto.MemberPayload;
-import com.votehaeduo.dto.request.CreateCommentRequestDto;
-import com.votehaeduo.dto.request.DeleteCommentRequestDto;
-import com.votehaeduo.dto.request.UpdateVoteRequestDto;
-import com.votehaeduo.dto.request.VotingRequestDto;
+import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
-import com.votehaeduo.dto.request.CreateVoteRequestDto;
-import com.votehaeduo.entity.Comment;
-import com.votehaeduo.entity.Vote;
-import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.entity.*;
 import com.votehaeduo.exception.comment.CommentNotFoundException;
 import com.votehaeduo.exception.date.InvalidEndDateException;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
@@ -19,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,13 +24,15 @@ import java.util.stream.Collectors;
 public class VoteService {
 
     private final VoteRepository voteRepository;
+
     private final MemberService memberService;
+    private final TeamService teamService;
 
     // 투표 등록
     @Transactional
-    public CreateVoteResponse create(CreateVoteRequestDto createVoteRequestDto) {
-        MemberPayload memberPayload = memberService.findById(createVoteRequestDto.getCreatedMemberId());
-        Vote vote = createVoteRequestDto.toEntity();
+    public CreateVoteResponse create(CreateVoteRequest createVoteRequest) {
+        MemberPayload memberPayload = memberService.findById(createVoteRequest.getCreatedMemberId());
+        Vote vote = createVoteRequest.toEntity();
         vote = voteRepository.save(vote);
         return CreateVoteResponse.of(vote, memberPayload);
     }
@@ -64,7 +62,7 @@ public class VoteService {
 
     // 투표 수정
     @Transactional
-    public UpdateVoteResponse update(Long id, UpdateVoteRequestDto updateVoteRequestDto) {
+    public UpdateVoteResponse update(Long id, UpdateVoteRequest updateVoteRequest) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
 
         // 수정하려고 하는 vote 종료 되었는지 확인
@@ -72,18 +70,18 @@ public class VoteService {
             throw new InvalidEndDateException();
         }
 
-        if (updateVoteRequestDto.getTitle() != null) {
-            vote.setTitle(updateVoteRequestDto.getTitle());
+        if (updateVoteRequest.getTitle() != null) {
+            vote.setTitle(updateVoteRequest.getTitle());
         }
-        if (updateVoteRequestDto.getEndDate() != null) {
+        if (updateVoteRequest.getEndDate() != null) {
             // 요청으로 들어온 endDate 현재 날짜 이후인지 확인
-            if (LocalDate.now().isAfter(updateVoteRequestDto.getEndDate())) {
+            if (LocalDate.now().isAfter(updateVoteRequest.getEndDate())) {
                 throw new InvalidEndDateException();
             }
-            vote.setEndDate(updateVoteRequestDto.getEndDate());
+            vote.setEndDate(updateVoteRequest.getEndDate());
         }
-        if (updateVoteRequestDto.getVoteItems() != null) {
-            List<VoteItem> items = updateVoteRequestDto.getVoteItems().stream()
+        if (updateVoteRequest.getVoteItems() != null) {
+            List<VoteItem> items = updateVoteRequest.getVoteItems().stream()
                     .map(voteItemPayload -> voteItemPayload.toEntity(vote))
                     .collect(Collectors.toList());
             vote.setVoteItems(items);
@@ -105,7 +103,7 @@ public class VoteService {
 
     // 투표하기
     @Transactional
-    public VotingResponse voting(Long id, VotingRequestDto votingRequestDto) {
+    public VotingResponse voting(Long id, VotingRequest votingRequest) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
 
         // 날짜 유효성 검사
@@ -114,11 +112,11 @@ public class VoteService {
         }
 
         // 투표하기 기능의 투표 정보
-        votingRequestDto.getVoteItemId().forEach(itemId ->
+        votingRequest.getVoteItemId().forEach(itemId ->
                 vote.getVoteItems().stream()
                         .filter(voteItem -> voteItem.getId().equals(itemId))
                         .findFirst()
-                        .ifPresent(voteItem -> voteItem.addMember(votingRequestDto.getMemberId())));
+                        .ifPresent(voteItem -> voteItem.addMember(votingRequest.getMemberId())));
         voteRepository.save(vote);
 
         // 투표 참여 전체 인원 id
@@ -129,17 +127,17 @@ public class VoteService {
 
     // 댓글 등록
     @Transactional
-    public CreateCommentResponse createComment(Long id, CreateCommentRequestDto createCommentRequestDto) {
+    public CreateCommentResponse createComment(Long id, CreateCommentRequest createCommentRequest) {
         Vote vote = voteRepository.findById(id).orElseThrow(VoteNotFoundException::new);
 
         // 날짜 유효성 검사
         if (LocalDate.now().isAfter(vote.getEndDate())) {
             throw new InvalidEndDateException();
         }
-        MemberPayload memberPayload = memberService.findById(createCommentRequestDto.getMemberId());
+        MemberPayload memberPayload = memberService.findById(createCommentRequest.getMemberId());
 
         // 닉네임 넣어주기
-        Comment comment = createCommentRequestDto.toEntity();
+        Comment comment = createCommentRequest.toEntity();
         comment.setNickname(memberPayload.getNickname());
 
         // 댓글 등록
@@ -151,12 +149,12 @@ public class VoteService {
 
     // 댓글 삭제
     @Transactional
-    public boolean deleteComment(Long voteId, Long commentId, DeleteCommentRequestDto deleteCommentRequestDto) {
+    public boolean deleteComment(Long voteId, Long commentId, DeleteCommentRequest deleteCommentRequest) {
         Vote vote = voteRepository.findById(voteId).orElseThrow(VoteNotFoundException::new);
 
         // 사용자가 작성한 댓글이 있는지 확인
         boolean hasUserComment = vote.getComments().stream()
-                .anyMatch(comment -> comment.getMemberId().equals(deleteCommentRequestDto.getMemberId()));
+                .anyMatch(comment -> comment.getMemberId().equals(deleteCommentRequest.getMemberId()));
         if (!hasUserComment) {
             throw new CommentNotFoundException();
         }
@@ -171,6 +169,21 @@ public class VoteService {
         vote.deleteComment(commentId);
         voteRepository.save(vote);
         return true;
+    }
+
+    // 팀 매칭
+    @Transactional
+    public CreateTeamResponse createTeam(Long voteId, CreateTeamRequest createTeamRequest) {
+        voteRepository.findById(voteId).orElseThrow(VoteNotFoundException::new);
+
+        // 멤버 찾기
+        List<MemberPayload> memberPayloads = memberService.findAllById(
+                new ArrayList<>(createTeamRequest.getMemberIds()));
+
+        // VoteService -> TeamService 호출
+        List<CreateTeamPayload> createTeamPayloads = teamService.createRandomTeam(
+                voteId, memberPayloads, createTeamRequest);
+        return new CreateTeamResponse(createTeamPayloads);
     }
 
 }

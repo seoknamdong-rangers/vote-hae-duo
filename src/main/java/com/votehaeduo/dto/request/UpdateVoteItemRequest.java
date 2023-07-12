@@ -13,7 +13,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateVoteItemRequestDto { // 삭제 예정
+public class UpdateVoteItemRequest { // 삭제 예정
 
     private Long id;
     private String title;

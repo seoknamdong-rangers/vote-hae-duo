@@ -13,13 +13,13 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UpdateVoteRequestDtoTest {
+class UpdateVoteRequestTest {
 
     @Test
     @DisplayName("VoteSaveRequestDtoTest toEntity 테스트")
     void toEntity() {
         // given
-        UpdateVoteRequestDto updateVoteRequestDto = new UpdateVoteRequestDto("12월 28일 풋살 투표",
+        UpdateVoteRequest updateVoteRequest = new UpdateVoteRequest("12월 28일 풋살 투표",
                 LocalDate.of(2023, 1, 25),
                 List.of(new VoteItemPayload(1L, "11시 ~ 1시", Set.of(1L, 2L)),
                         new VoteItemPayload(2L, "12시 ~ 2시", Set.of(3L, 4L))));
@@ -45,12 +45,12 @@ class UpdateVoteRequestDtoTest {
 
         // when
         Vote result = Vote.builder()
-                .title(updateVoteRequestDto.getTitle())
+                .title(updateVoteRequest.getTitle())
                 .startDate(LocalDate.of(2023, 1, 20))
-                .endDate(updateVoteRequestDto.getEndDate())
+                .endDate(updateVoteRequest.getEndDate())
                 .createdMemberId(1L)
                 .build();
-        List<VoteItem> items = updateVoteRequestDto.getVoteItems().stream()
+        List<VoteItem> items = updateVoteRequest.getVoteItems().stream()
                 .map(voteItemUpdateRequestDto -> voteItemUpdateRequestDto.toEntity(result))
                 .collect(Collectors.toList());
         result.setVoteItems(items);
