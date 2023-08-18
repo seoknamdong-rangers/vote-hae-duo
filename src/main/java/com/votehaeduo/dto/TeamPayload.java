@@ -7,30 +7,28 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTeamPayload {
+public class TeamPayload {
 
     private Long id;
-    private String teamName;
-    private Set<String> memberNickname;
+    private Set<String> teamMembers;
     private Long createdMemberId;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private LocalDate createdDate;
+    private LocalDateTime createdDateTime;
     private Long voteId;
 
-    public static CreateTeamPayload from(Team team) {
-        return new CreateTeamPayload(
+    public static TeamPayload from(Team team) {
+        return new TeamPayload(
                 team.getId(),
-                team.getTeamName(),
-                team.getMemberNicknames(),
+                team.getTeamMembers(),
                 team.getCreatedMemberId(),
-                team.getCreatedDate(),
+                team.getCreatedDateTime(),
                 team.getVoteId()
         );
     }

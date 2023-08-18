@@ -1,6 +1,6 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.CreateTeamPayload;
+import com.votehaeduo.dto.TeamPayload;
 import com.votehaeduo.dto.MemberPayload;
 import com.votehaeduo.dto.request.CreateTeamRequest;
 import com.votehaeduo.entity.Team;
@@ -22,28 +22,27 @@ public class TeamService {
 
     // 원하는 팀 수 만큼 인원 나누기
     @Transactional
-    public List<CreateTeamPayload> createRandomTeam(Long voteId, List<MemberPayload> memberPayloads,
-                                                    CreateTeamRequest createTeamRequest) {
+    public TeamPayload createRandomTeam(Long voteId, List<MemberPayload> memberPayloads,
+                                              CreateTeamRequest createTeamRequest) {
         Collections.shuffle(memberPayloads);
-
-        int membersPerGroup = (int) (memberPayloads.size() / createTeamRequest.getTeamCount());
+        int membersPerTeam = (int) (memberPayloads.size() / createTeamRequest.getTeamCount());
         int remainingMembers = (int) (memberPayloads.size() % createTeamRequest.getTeamCount());
 
-        AtomicInteger startIndex = new AtomicInteger(1);
-        List<Team> createdTeams = IntStream.range(0, Math.toIntExact(createTeamRequest.getTeamCount()))
+        AtomicInteger startIndex = new AtomicInteger(0);
+        Set<String> teamMembers = IntStream.range(0, Math.toIntExact(createTeamRequest.getTeamCount()))
                 .mapToObj(i -> {
-                    int groupSize = membersPerGroup + (i < remainingMembers ? 1 : 0);
-                    Set<String> teamMemberNicknames = memberPayloads.stream()
+                    int teamSize = membersPerTeam + (i < remainingMembers ? 1 : 0);
+                    List<String> teamMemberNicknames = memberPayloads.stream()
                             .map(MemberPayload::getNickname)
-                            .skip(startIndex.getAndAdd(groupSize) - 1)
-                            .limit(groupSize)
-                            .collect(Collectors.toSet());
-                    return Team.of((long) i, createTeamRequest.getCreatedMemberId(), voteId, teamMemberNicknames);
+                            .skip(startIndex.getAndAdd(teamSize))
+                            .limit(teamSize)
+                            .collect(Collectors.toList());
+                    return String.join(", ", teamMemberNicknames);
                 })
-                .collect(Collectors.toList());
-        return teamRepository.saveAll(createdTeams).stream()
-                .map(CreateTeamPayload::from)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
+        Team team = Team.of(createTeamRequest.getCreatedMemberId(), voteId, teamMembers);
+
+        return TeamPayload.from(teamRepository.save(team));
     }
 
 }

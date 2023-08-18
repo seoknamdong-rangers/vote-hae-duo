@@ -43,6 +43,9 @@ class VoteControllerTest {
     @MockBean
     private VoteService voteService;
 
+    private final LocalDate testStartDate = LocalDate.now();
+    private final LocalDate testEndDate = LocalDate.now().plusDays(3);
+
     @BeforeEach
     void setUp() {
         this.mvc = MockMvcBuilders.standaloneSetup(new VoteController(voteService)).build();
@@ -54,9 +57,9 @@ class VoteControllerTest {
         // given
         CreateVoteResponse expectedVoteResponseDto = new CreateVoteResponse(
                 new VotePayload(1L,
-                        "1월 8일 풋살",
-                        LocalDate.of(2023, 6, 9),
-                        LocalDate.of(2023, 6, 30),
+                        "금주 풋살 투표",
+                        testStartDate,
+                        testEndDate,
                         1L,
                         List.of(new VoteItemPayload(1L, "11시 ~ 1시 실외", Set.of(2L, 3L)),
                                 new VoteItemPayload(2L, "12시 ~ 2시 실내", Set.of(4L, 5L))),
@@ -65,9 +68,9 @@ class VoteControllerTest {
                 "킴대세");
         given(voteService.create(any())).willReturn(expectedVoteResponseDto);
 
-        CreateVoteRequest createVoteRequest = new CreateVoteRequest("1월 8일 풋살",
-                LocalDate.of(2023, 6, 13),
-                LocalDate.of(2023, 6, 30), 1L,
+        CreateVoteRequest createVoteRequest = new CreateVoteRequest("금주 풋살 투표",
+                testStartDate,
+                testEndDate, 1L,
                 List.of(new CreateVoteItem("11시 ~ 1시 실외"),
                         new CreateVoteItem("12시 ~ 2시 실내")));
         String voteRequestDtoJsonString = objectMapper.writeValueAsString(createVoteRequest);
@@ -78,9 +81,9 @@ class VoteControllerTest {
                         .content(voteRequestDtoJsonString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.votePayload.id").value(1L))
-                .andExpect(jsonPath("$.votePayload.title").value("1월 8일 풋살"))
-                .andExpect(jsonPath("$.votePayload.startDate").value("2023-06-09"))
-                .andExpect(jsonPath("$.votePayload.endDate").value("2023-06-30"))
+                .andExpect(jsonPath("$.votePayload.title").value("금주 풋살 투표"))
+                .andExpect(jsonPath("$.votePayload.startDate").value(String.valueOf(testStartDate)))
+                .andExpect(jsonPath("$.votePayload.endDate").value(String.valueOf(testEndDate)))
                 .andExpect(jsonPath("$.votePayload.createdMemberId").value(1L))
                 .andExpect(jsonPath("$.votePayload.voteItems.[0].id").value(1L))
                 .andExpect(jsonPath("$.votePayload.voteItems.[0].title").value("11시 ~ 1시 실외"))
@@ -313,23 +316,13 @@ class VoteControllerTest {
     @DisplayName("팀 매칭")
     void createTeam() throws Exception {
         // given
-        List<CreateTeamPayload> createTeamPayloads = List.of(
-                CreateTeamPayload.builder()
-                        .id(1L)
-                        .teamName("1 팀")
-                        .memberNickname(Set.of("성준", "성욱"))
-                        .createdMemberId(1L)
-                        .voteId(1L)
-                        .build(),
-                CreateTeamPayload.builder()
-                        .id(2L)
-                        .teamName("2 팀")
-                        .memberNickname(Set.of("준성", "영수"))
-                        .createdMemberId(1L)
-                        .voteId(1L)
-                        .build()
-        );
-        CreateTeamResponse createTeamResponse = new CreateTeamResponse(createTeamPayloads);
+        TeamPayload teamPayload = TeamPayload.builder()
+                .id(1L)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdMemberId(1L)
+                .voteId(1L)
+                .build();
+        CreateTeamResponse createTeamResponse = new CreateTeamResponse(teamPayload);
         given(voteService.createTeam(any(), any())).willReturn(createTeamResponse);
 
         CreateTeamRequest createTeamRequest = CreateTeamRequest.builder()
@@ -344,16 +337,10 @@ class VoteControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(voteRequestDtoJsonString))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.createTeamPayloads.[0].id").value(1L))
-                .andExpect(jsonPath("$.createTeamPayloads.[0].teamName").value("1 팀"))
-                .andExpect(jsonPath("$.createTeamPayloads.[0].memberNickname").value(containsInAnyOrder("성준", "성욱")))
-                .andExpect(jsonPath("$.createTeamPayloads.[0].createdMemberId").value(1L))
-                .andExpect(jsonPath("$.createTeamPayloads.[0].voteId").value(1L))
-                .andExpect(jsonPath("$.createTeamPayloads.[1].id").value(2L))
-                .andExpect(jsonPath("$.createTeamPayloads.[1].teamName").value("2 팀"))
-                .andExpect(jsonPath("$.createTeamPayloads.[1].memberNickname").value(containsInAnyOrder("준성", "영수")))
-                .andExpect(jsonPath("$.createTeamPayloads.[1].createdMemberId").value(1L))
-                .andExpect(jsonPath("$.createTeamPayloads.[1].voteId").value(1L));
+                .andExpect(jsonPath("$.teamPayload.id").value(1L))
+                .andExpect(jsonPath("$.teamPayload.teamMembers").value(containsInAnyOrder("성준, 성욱", "준성, 영수")))
+                .andExpect(jsonPath("$.teamPayload.createdMemberId").value(1L))
+                .andExpect(jsonPath("$.teamPayload.voteId").value(1L));
     }
 
 }

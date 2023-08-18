@@ -1,12 +1,14 @@
 package com.votehaeduo.entity;
 
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
 @Getter
 @Entity
 @Builder
@@ -18,28 +20,25 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "team_name")
-    private String teamName;
-
+    @BatchSize(size = 10)
     @Builder.Default
-    @Column(name = "member_nicknames")
-    @ElementCollection(fetch = FetchType.LAZY)
-    private Set<String> memberNicknames = new HashSet<>();
+    @ElementCollection
+    @Column(name = "team_member")
+    private Set<String> teamMembers = new HashSet<>();
 
     @Column(name = "created_member_id")
     private Long createdMemberId;
 
     @Column(name = "create_date")
-    private LocalDate createdDate;
+    private LocalDateTime createdDateTime;
 
     @JoinColumn(name = "vote_id")
     private Long voteId;
 
-    public static Team of(Long teamNumber, Long createdMemberId, Long voteId, Set<String> teamMemberNicknames) {
+    public static Team of(Long createdMemberId, Long voteId, Set<String> teamMemberNicknames) {
         return Team.builder()
-                .teamName((teamNumber + 1) + " 팀")
-                .memberNicknames(teamMemberNicknames)
-                .createdDate(LocalDate.now())
+                .teamMembers(teamMemberNicknames)
+                .createdDateTime(LocalDateTime.now())
                 .createdMemberId(createdMemberId)
                 .voteId(voteId)
                 .build();

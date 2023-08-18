@@ -4,36 +4,35 @@ import com.votehaeduo.entity.Team;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CreateTeamPayloadTest {
+class TeamPayloadTest {
 
     @Test
-    @DisplayName("")
+    @DisplayName("TeamPayload from 테스트")
     void from() {
         // given
+        LocalDateTime localDateTimeTest = LocalDateTime.now();
         Team team = Team.builder()
                 .id(1L)
-                .teamName("1 팀")
-                .memberNicknames(Set.of("성준", "성욱"))
-                .createdDate(LocalDate.now())
+                .teamMembers(Set.of("성준", "성욱"))
+                .createdDateTime(localDateTimeTest)
                 .createdMemberId(1L)
                 .voteId(1L)
                 .build();
-        CreateTeamPayload expected = CreateTeamPayload.builder()
+        TeamPayload expected = TeamPayload.builder()
                 .id(1L)
-                .teamName("1 팀")
-                .memberNickname(Set.of("성준", "성욱"))
-                .createdDate(LocalDate.now())
+                .teamMembers(Set.of("성준", "성욱"))
+                .createdDateTime(localDateTimeTest)
                 .createdMemberId(1L)
                 .voteId(1L)
                 .build();
 
         // when
-        CreateTeamPayload result = CreateTeamPayload.from(team);
+        TeamPayload result = TeamPayload.from(team);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

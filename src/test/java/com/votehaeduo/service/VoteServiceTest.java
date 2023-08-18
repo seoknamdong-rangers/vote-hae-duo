@@ -46,6 +46,9 @@ class VoteServiceTest {
     @Mock
     private TeamService teamService;
 
+    private final LocalDate testStartDate = LocalDate.now();
+    private final LocalDate testEndDate = LocalDate.now().plusDays(3);
+
     @Test
     @DisplayName("투표 등록")
     void save() {
@@ -176,15 +179,15 @@ class VoteServiceTest {
     }
 
     @Test
-    @DisplayName("투표 수정")
+    @DisplayName("투표 수정") // 날짜 수정
     void update() {
         // given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()
                 .id(id)
                 .title("6월 8일 풋살 투표")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 25))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
@@ -202,8 +205,8 @@ class VoteServiceTest {
         vote.addItems(voteItems);
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
         UpdateVoteResponse expectedUpdateVoteResponse = new UpdateVoteResponse(id, "6월 8일 풋살 투표",
-                LocalDate.of(2023, 6, 8),
-                LocalDate.of(2023, 6, 25), 1L,
+                testStartDate,
+                testEndDate, 1L,
                 List.of(new VoteItemDetails(1L, "11시 ~ 1시 실외", Set.of(1L, 2L), 2L),
                         new VoteItemDetails(2L, "12시 ~ 2시 실내", Set.of(3L, 4L), 2L)),
                 4L);
@@ -212,7 +215,7 @@ class VoteServiceTest {
         // when
         UpdateVoteResponse updateVoteResponse = voteService.update(id, UpdateVoteRequest.builder()
                 .title("6월 8일 풋살 투표")
-                .endDate(LocalDate.of(2023, 6, 25))
+                .endDate(testEndDate)
                 .voteItems(List.of(
                         VoteItemPayload.builder().id(1L).title("11시 ~ 1시 실외").memberIds(Set.of(1L, 2L)).build(),
                         VoteItemPayload.builder().id(2L).title("12시 ~ 2시 실내").memberIds(Set.of(3L, 4L)).build()))
@@ -261,8 +264,8 @@ class VoteServiceTest {
         Vote vote = Vote.builder()
                 .id(id)
                 .title("6월 8일 풋살")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 30))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .comments(List.of(Comment.builder().id(1L).build()))
                 .build();
@@ -281,8 +284,8 @@ class VoteServiceTest {
         vote.addItems(voteItems);
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
         VotingResponse expectedVotingResponse = new VotingResponse(id, "6월 8일 풋살",
-                LocalDate.of(2023, 6, 8),
-                LocalDate.of(2023, 6, 30), 1L,
+                testStartDate,
+                testEndDate, 1L,
                 List.of(new VoteItemDetails(1L, "11시 ~ 1시 실외", Set.of(1L, 2L), 2L),
                         new VoteItemDetails(2L, "12시 ~ 2시 실내", Set.of(1L, 7L), 2L)),
                 List.of(CommentPayload.builder().id(1L).build()), Set.of(1L, 2L, 7L), 3L);
@@ -325,16 +328,16 @@ class VoteServiceTest {
         Vote findVote = Vote.builder()
                 .id(1L)
                 .title("6월 8일 풋살 투표")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 30))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .build();
         given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
         Vote saveVote = Vote.builder()
                 .id(1L)
                 .title("6월 8일 풋살 투표")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 30))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .comments(List.of(Comment.builder()
                         .id(1L)
@@ -451,6 +454,7 @@ class VoteServiceTest {
     @DisplayName("팀 매칭")
     void createTeam() {
         // given
+        LocalDateTime localDateTimeTest = LocalDateTime.now();
         Vote vote = Vote.builder()
                 .id(1L)
                 .title("7월 7일 풋살 투표")
@@ -473,25 +477,15 @@ class VoteServiceTest {
         vote.addItems(voteItems);
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
 
-        List<CreateTeamPayload> createTeamPayloads = List.of(
-                CreateTeamPayload.builder()
+        TeamPayload teamPayloads =
+                TeamPayload.builder()
                         .id(1L)
-                        .teamName("1 팀")
-                        .memberNickname(Set.of("성준", "성욱"))
+                        .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
                         .createdMemberId(1L)
-                        .createdDate(LocalDate.now())
+                        .createdDateTime(localDateTimeTest)
                         .voteId(1L)
-                        .build(),
-                CreateTeamPayload.builder()
-                        .id(2L)
-                        .teamName("2 팀")
-                        .memberNickname(Set.of("준성", "영수"))
-                        .createdMemberId(1L)
-                        .createdDate(LocalDate.now())
-                        .voteId(1L)
-                        .build()
-        );
-        given(teamService.createRandomTeam(any(), any(), any())).willReturn(createTeamPayloads);
+                        .build();
+        given(teamService.createRandomTeam(any(), any(), any())).willReturn(teamPayloads);
 
         List<MemberPayload> memberPayloads = List.of(
                 MemberPayload.builder().id(1L).nickname("성준").build(),
@@ -501,26 +495,16 @@ class VoteServiceTest {
         );
         given(memberService.findAllById(any())).willReturn(memberPayloads);
 
-        CreateTeamResponse expectedResult = new CreateTeamResponse(List.of(
-                CreateTeamPayload.from(Team.builder()
+        CreateTeamResponse expectedResult = new CreateTeamResponse(
+                TeamPayload.from(Team.builder()
                         .id(1L)
-                        .teamName("1 팀")
-                        .memberNicknames(Set.of("성준", "성욱"))
+                        .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
                         .createdMemberId(1L)
                         .voteId(1L)
-                        .createdDate(LocalDate.now())
-                        .build()
-                ),
-                CreateTeamPayload.from(Team.builder()
-                        .id(2L)
-                        .teamName("2 팀")
-                        .memberNicknames(Set.of("준성", "영수"))
-                        .createdMemberId(1L)
-                        .voteId(1L)
-                        .createdDate(LocalDate.now())
+                        .createdDateTime(localDateTimeTest)
                         .build()
                 )
-        ));
+        );
 
         // when
         CreateTeamRequest createTeamRequest = CreateTeamRequest.builder()

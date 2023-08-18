@@ -1,6 +1,6 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.CreateTeamPayload;
+import com.votehaeduo.dto.TeamPayload;
 import com.votehaeduo.dto.MemberPayload;
 import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
@@ -181,9 +181,9 @@ public class VoteService {
                 new ArrayList<>(createTeamRequest.getMemberIds()));
 
         // VoteService -> TeamService 호출
-        List<CreateTeamPayload> createTeamPayloads = teamService.createRandomTeam(
+        TeamPayload teamPayload = teamService.createRandomTeam(
                 voteId, memberPayloads, createTeamRequest);
-        return new CreateTeamResponse(createTeamPayloads);
+        return new CreateTeamResponse(teamPayload);
     }
 
 }

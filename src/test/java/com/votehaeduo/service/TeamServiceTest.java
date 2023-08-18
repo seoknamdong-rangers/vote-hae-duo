@@ -1,6 +1,6 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.CreateTeamPayload;
+import com.votehaeduo.dto.TeamPayload;
 import com.votehaeduo.dto.MemberPayload;
 import com.votehaeduo.dto.request.CreateTeamRequest;
 import com.votehaeduo.entity.Team;
@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -34,40 +34,21 @@ class TeamServiceTest {
     @DisplayName("팀 매칭")
     void createRandomTeam() {
         // given
-        List<Team> teams = List.of(
-                Team.builder()
-                        .teamName("1 팀")
-                        .createdDate(LocalDate.now())
-                        .memberNicknames(Set.of("성준", "성욱"))
-                        .createdMemberId(1L)
-                        .voteId(1L)
-                        .build(),
-                Team.builder()
-                        .teamName("2 팀")
-                        .createdDate(LocalDate.now())
-                        .memberNicknames(Set.of("준성", "영수"))
-                        .createdMemberId(1L)
-                        .voteId(1L)
-                        .build()
-        );
-        given(teamRepository.saveAll(any())).willReturn(teams);
+        LocalDateTime localDateTimeTest = LocalDateTime.now();
+        Team team = Team.builder()
+                .createdDateTime(localDateTimeTest)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdMemberId(1L)
+                .voteId(1L)
+                .build();
+        given(teamRepository.save(any())).willReturn(team);
 
-        List<CreateTeamPayload> expectedResult = List.of(
-                CreateTeamPayload.builder()
-                        .teamName("1 팀")
-                        .createdDate(LocalDate.now())
-                        .memberNickname(Set.of("성준", "성욱"))
+        TeamPayload expectedResult = TeamPayload.builder()
+                        .createdDateTime(localDateTimeTest)
+                        .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
                         .createdMemberId(1L)
                         .voteId(1L)
-                        .build(),
-                CreateTeamPayload.builder()
-                        .teamName("2 팀")
-                        .createdDate(LocalDate.now())
-                        .memberNickname(Set.of("준성", "영수"))
-                        .createdMemberId(1L)
-                        .voteId(1L)
-                        .build()
-        );
+                        .build();
 
         // when
         List<MemberPayload> memberPayloads = new ArrayList<>(List.of(
@@ -81,10 +62,10 @@ class TeamServiceTest {
                 .teamCount(2L)
                 .createdMemberId(1L)
                 .build();
-        List<CreateTeamPayload> createTeamPayloads = teamService.createRandomTeam(1L, memberPayloads, createTeamRequest);
+        TeamPayload teamPayload = teamService.createRandomTeam(1L, memberPayloads, createTeamRequest);
 
         // then
-        Assertions.assertThat(createTeamPayloads).usingRecursiveComparison().isEqualTo(expectedResult);
+        Assertions.assertThat(teamPayload).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
 }
