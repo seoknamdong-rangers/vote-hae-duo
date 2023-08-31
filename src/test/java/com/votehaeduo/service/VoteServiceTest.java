@@ -3,10 +3,7 @@ package com.votehaeduo.service;
 import com.votehaeduo.dto.*;
 import com.votehaeduo.dto.request.*;
 import com.votehaeduo.dto.response.*;
-import com.votehaeduo.entity.Comment;
-import com.votehaeduo.entity.Member;
-import com.votehaeduo.entity.Vote;
-import com.votehaeduo.entity.VoteItem;
+import com.votehaeduo.entity.*;
 import com.votehaeduo.exception.comment.CommentNotFoundException;
 import com.votehaeduo.exception.date.InvalidEndDateException;
 import com.votehaeduo.exception.vote.VoteNotFoundException;
@@ -37,15 +34,20 @@ import static org.mockito.Mockito.doNothing;
 @ExtendWith(MockitoExtension.class)
 class VoteServiceTest {
 
+    @InjectMocks
+    private VoteService voteService;
+
     @Mock
     private VoteRepository voteRepository;
 
     @Mock
     private MemberService memberService;
 
-    @InjectMocks
-    private VoteService voteService;
+    @Mock
+    private TeamService teamService;
 
+    private final LocalDate testStartDate = LocalDate.now();
+    private final LocalDate testEndDate = LocalDate.now().plusDays(3);
 
     @Test
     @DisplayName("투표 등록")
@@ -79,7 +81,7 @@ class VoteServiceTest {
         given(memberService.findById(any())).willReturn(MemberPayload.from(Objects.requireNonNull(member)));
 
         // when
-        CreateVoteResponse createVoteResponse = voteService.create(CreateVoteRequestDto.builder()
+        CreateVoteResponse createVoteResponse = voteService.create(CreateVoteRequest.builder()
                 .title("6월 8일 풋살 투표")
                 .startDate(LocalDate.of(2023, 6, 8))
                 .endDate(LocalDate.of(2023, 6, 30))
@@ -177,15 +179,15 @@ class VoteServiceTest {
     }
 
     @Test
-    @DisplayName("투표 수정")
+    @DisplayName("투표 수정") // 날짜 수정
     void update() {
         // given
         Long id = new Random().nextLong();
         Vote vote = Vote.builder()
                 .id(id)
                 .title("6월 8일 풋살 투표")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 25))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .build();
         List<VoteItem> voteItems = List.of(VoteItem.builder()
@@ -203,17 +205,17 @@ class VoteServiceTest {
         vote.addItems(voteItems);
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
         UpdateVoteResponse expectedUpdateVoteResponse = new UpdateVoteResponse(id, "6월 8일 풋살 투표",
-                LocalDate.of(2023, 6, 8),
-                LocalDate.of(2023, 6, 25), 1L,
+                testStartDate,
+                testEndDate, 1L,
                 List.of(new VoteItemDetails(1L, "11시 ~ 1시 실외", Set.of(1L, 2L), 2L),
                         new VoteItemDetails(2L, "12시 ~ 2시 실내", Set.of(3L, 4L), 2L)),
                 4L);
         given(voteRepository.save(any())).willReturn(vote);
 
         // when
-        UpdateVoteResponse updateVoteResponse = voteService.update(id, UpdateVoteRequestDto.builder()
+        UpdateVoteResponse updateVoteResponse = voteService.update(id, UpdateVoteRequest.builder()
                 .title("6월 8일 풋살 투표")
-                .endDate(LocalDate.of(2023, 6, 25))
+                .endDate(testEndDate)
                 .voteItems(List.of(
                         VoteItemPayload.builder().id(1L).title("11시 ~ 1시 실외").memberIds(Set.of(1L, 2L)).build(),
                         VoteItemPayload.builder().id(2L).title("12시 ~ 2시 실내").memberIds(Set.of(3L, 4L)).build()))
@@ -262,8 +264,8 @@ class VoteServiceTest {
         Vote vote = Vote.builder()
                 .id(id)
                 .title("6월 8일 풋살")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 30))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .comments(List.of(Comment.builder().id(1L).build()))
                 .build();
@@ -282,8 +284,8 @@ class VoteServiceTest {
         vote.addItems(voteItems);
         given(voteRepository.findById(any())).willReturn(Optional.of(vote));
         VotingResponse expectedVotingResponse = new VotingResponse(id, "6월 8일 풋살",
-                LocalDate.of(2023, 6, 8),
-                LocalDate.of(2023, 6, 30), 1L,
+                testStartDate,
+                testEndDate, 1L,
                 List.of(new VoteItemDetails(1L, "11시 ~ 1시 실외", Set.of(1L, 2L), 2L),
                         new VoteItemDetails(2L, "12시 ~ 2시 실내", Set.of(1L, 7L), 2L)),
                 List.of(CommentPayload.builder().id(1L).build()), Set.of(1L, 2L, 7L), 3L);
@@ -291,7 +293,7 @@ class VoteServiceTest {
         given(voteRepository.save(any())).willReturn(vote);
 
         // when
-        VotingResponse votingResponse = voteService.voting(id, new VotingRequestDto(7L, List.of(2L)));
+        VotingResponse votingResponse = voteService.voting(id, new VotingRequest(7L, List.of(2L)));
 
         // then
         Assertions.assertThat(votingResponse).usingRecursiveComparison().isEqualTo(expectedVotingResponse);
@@ -309,7 +311,7 @@ class VoteServiceTest {
                 .startDate(LocalDate.from(LocalDateTime.now().minusDays(2)))
                 .endDate(LocalDate.from(expiredDateTime))
                 .build();
-        VotingRequestDto requestDto = new VotingRequestDto(1L, List.of(1L, 2L));
+        VotingRequest requestDto = new VotingRequest(1L, List.of(1L, 2L));
 
         given(voteRepository.findById(voteId)).willReturn(Optional.of(vote));
 
@@ -326,16 +328,16 @@ class VoteServiceTest {
         Vote findVote = Vote.builder()
                 .id(1L)
                 .title("6월 8일 풋살 투표")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 30))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .build();
         given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
         Vote saveVote = Vote.builder()
                 .id(1L)
                 .title("6월 8일 풋살 투표")
-                .startDate(LocalDate.of(2023, 6, 8))
-                .endDate(LocalDate.of(2023, 6, 30))
+                .startDate(testStartDate)
+                .endDate(testEndDate)
                 .createdMemberId(1L)
                 .comments(List.of(Comment.builder()
                         .id(1L)
@@ -352,7 +354,7 @@ class VoteServiceTest {
         given(memberService.findById(any())).willReturn(MemberPayload.from(Objects.requireNonNull(member)));
 
         // when
-        CreateCommentResponse createCommentResponse = voteService.createComment(1L, CreateCommentRequestDto.builder()
+        CreateCommentResponse createCommentResponse = voteService.createComment(1L, CreateCommentRequest.builder()
                 .content("재밌겠다")
                 .memberId(1L)
                 .date(LocalDate.of(2023, 6, 8))
@@ -376,7 +378,7 @@ class VoteServiceTest {
                 .createdMemberId(1L)
                 .build();
         given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
-        CreateCommentRequestDto commentRequestDto = new CreateCommentRequestDto();
+        CreateCommentRequest commentRequestDto = new CreateCommentRequest();
 
         // when, then
         assertThatThrownBy(() -> voteService.createComment(id, commentRequestDto))
@@ -419,7 +421,7 @@ class VoteServiceTest {
 
         // when
         boolean result = voteService.deleteComment(id, 1L,
-                DeleteCommentRequestDto.builder()
+                DeleteCommentRequest.builder()
                         .memberId(1L)
                         .build());
 
@@ -440,12 +442,80 @@ class VoteServiceTest {
                 .createdMemberId(1L)
                 .build();
         given(voteRepository.findById(any())).willReturn(Optional.of(findVote));
-        DeleteCommentRequestDto deleteCommentRequestDto = new DeleteCommentRequestDto(1L);
+        DeleteCommentRequest deleteCommentRequest = new DeleteCommentRequest(1L);
 
         // when, then
-        assertThatThrownBy(() -> voteService.deleteComment(id, id, deleteCommentRequestDto))
+        assertThatThrownBy(() -> voteService.deleteComment(id, id, deleteCommentRequest))
                 .isInstanceOf(CommentNotFoundException.class)
                 .hasMessage("댓글을 찾을 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("팀 매칭")
+    void createTeam() {
+        // given
+        LocalDateTime localDateTimeTest = LocalDateTime.now();
+        Vote vote = Vote.builder()
+                .id(1L)
+                .title("7월 7일 풋살 투표")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now())
+                .createdMemberId(1L)
+                .build();
+        List<VoteItem> voteItems = List.of(VoteItem.builder()
+                        .id(1L)
+                        .title("12 ~ 2 실내")
+                        .vote(vote)
+                        .memberIds(Set.of(1L, 2L))
+                        .build(),
+                VoteItem.builder()
+                        .id(2L)
+                        .title("11 ~ 1 야외")
+                        .vote(vote)
+                        .memberIds(Set.of(3L, 4L))
+                        .build());
+        vote.addItems(voteItems);
+        given(voteRepository.findById(any())).willReturn(Optional.of(vote));
+
+        TeamPayload teamPayloads =
+                TeamPayload.builder()
+                        .id(1L)
+                        .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                        .createdMemberId(1L)
+                        .createdDateTime(localDateTimeTest)
+                        .voteId(1L)
+                        .build();
+        given(teamService.createRandomTeam(any(), any(), any())).willReturn(teamPayloads);
+
+        List<MemberPayload> memberPayloads = List.of(
+                MemberPayload.builder().id(1L).nickname("성준").build(),
+                MemberPayload.builder().id(2L).nickname("성욱").build(),
+                MemberPayload.builder().id(3L).nickname("준성").build(),
+                MemberPayload.builder().id(4L).nickname("영수").build()
+        );
+        given(memberService.findAllById(any())).willReturn(memberPayloads);
+
+        CreateTeamResponse expectedResult = new CreateTeamResponse(
+                TeamPayload.from(Team.builder()
+                        .id(1L)
+                        .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                        .createdMemberId(1L)
+                        .voteId(1L)
+                        .createdDateTime(localDateTimeTest)
+                        .build()
+                )
+        );
+
+        // when
+        CreateTeamRequest createTeamRequest = CreateTeamRequest.builder()
+                .memberIds(Set.of(1L, 2L, 3L, 4L))
+                .teamCount(2L)
+                .createdMemberId(1L)
+                .build();
+        CreateTeamResponse createTeamResponse = voteService.createTeam(1L, createTeamRequest);
+
+        // then
+        Assertions.assertThat(createTeamResponse).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
 }

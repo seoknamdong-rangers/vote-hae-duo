@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 @NoArgsConstructor
-public class CreateVoteRequestDto {
+public class CreateVoteRequest {
 
     @NotBlank(message = "제목은 공백이 아니어야 합니다.")
     private String title;
@@ -31,7 +31,7 @@ public class CreateVoteRequestDto {
 
     private VoteCreateOption voteCreateOption;
 
-    public CreateVoteRequestDto(String title, LocalDate startDate, LocalDate endDate, Long createdMemberId, List<CreateVoteItem> voteItems, VoteCreateOption voteCreateOption) {
+    public CreateVoteRequest(String title, LocalDate startDate, LocalDate endDate, Long createdMemberId, List<CreateVoteItem> voteItems, VoteCreateOption voteCreateOption) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -40,7 +40,7 @@ public class CreateVoteRequestDto {
         this.voteCreateOption = voteCreateOption;
     }
 
-    public CreateVoteRequestDto(String title, LocalDate startDate, LocalDate endDate, Long createdMemberId, List<CreateVoteItem> voteItems) {
+    public CreateVoteRequest(String title, LocalDate startDate, LocalDate endDate, Long createdMemberId, List<CreateVoteItem> voteItems) {
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;

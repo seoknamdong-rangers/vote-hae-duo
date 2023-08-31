@@ -9,14 +9,14 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UpdateVoteItemRequestDtoTest {
+class UpdateVoteItemRequestTest {
 
     @Test
     @DisplayName("VoteItemUpdateRequestDto toEntity 테스트")
     void toEntity() {
         // given
         Vote vote = Vote.builder().build();
-        UpdateVoteItemRequestDto updateVoteItemRequestDto = UpdateVoteItemRequestDto.builder()
+        UpdateVoteItemRequest updateVoteItemRequest = UpdateVoteItemRequest.builder()
                 .id(1L)
                 .title("9시 ~ 11시")
                 .memberIds(Set.of(1L, 2L))
@@ -29,7 +29,7 @@ class UpdateVoteItemRequestDtoTest {
                 .build();
 
         // when
-        VoteItem result = updateVoteItemRequestDto.toEntity(vote);
+        VoteItem result = updateVoteItemRequest.toEntity(vote);
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

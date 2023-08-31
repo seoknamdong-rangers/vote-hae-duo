@@ -1,1 +1,16 @@
-insert into member values (999L, 'one', '총무', '이메일@이메일', 'asd');
+insert into member values (999L, 'one', '총무', '총무@이메일', 'asd');
+insert into member values (1L, 'one', '성준', '성준@이메일', 'asd');
+insert into member values (2L, 'one', '성욱', '성욱@이메일', 'asd');
+insert into member values (3L, 'one', '준성', '준성@이메일', 'asd');
+insert into member values (4L, 'one', '영수', '영수@이메일', 'asd');
+insert into member values (5L, 'one', '황두', '황두@이메일', 'asd');
+insert into member values (6L, 'one', '항섭', '항섭@이메일', 'asd');
+insert into member values (7L, 'one', '종혁', '종혁@이메일', 'asd');
+insert into member values (8L, 'one', '상국', '상국@이메일', 'asd');
+insert into member values (9L, 'one', '배성', '배성@이메일', 'asd');
+insert into member values (10L, 'one', '예훈', '예훈@이메일', 'asd');
+insert into member values (11L, 'one', '상훈', '상훈@이메일', 'asd');
+insert into member values (12L, 'one', '상우', '상우@이메일', 'asd');
+insert into member values (13L, 'one', '승훈', '승훈@이메일', 'asd');
+insert into member values (14L, 'one', '징어', '징어@이메일', 'asd');
+insert into member values (15L, 'one', '도식', '도식@이메일', 'asd');

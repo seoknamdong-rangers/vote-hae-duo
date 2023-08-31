@@ -3,7 +3,7 @@ package com.votehaeduo.service.scheduler;
 import com.votehaeduo.dto.CommentPayload;
 import com.votehaeduo.dto.VoteItemPayload;
 import com.votehaeduo.dto.VotePayload;
-import com.votehaeduo.dto.request.CreateVoteRequestDto;
+import com.votehaeduo.dto.request.CreateVoteRequest;
 import com.votehaeduo.dto.response.CreateVoteResponse;
 import com.votehaeduo.service.VoteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +54,7 @@ class VoteSchedulerTest {
         voteScheduler.scheduleVote();
 
         // Then
-        verify(voteService, times(1)).create(any(CreateVoteRequestDto.class));
+        verify(voteService, times(1)).create(any(CreateVoteRequest.class));
     }
 
 }

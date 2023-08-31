@@ -8,13 +8,13 @@ import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CreateCommentRequestDtoTest {
+class CreateCommentRequestTest {
 
     @Test
     @DisplayName("CreateCommentRequestDto toEntity Test")
     void toEntity() {
         // given
-        CreateCommentRequestDto createCommentRequestDto = new CreateCommentRequestDto(
+        CreateCommentRequest createCommentRequest = new CreateCommentRequest(
                 "정말 재밌다..",
                 LocalDate.of(2023, 5, 23),
                 1L);
@@ -26,7 +26,7 @@ class CreateCommentRequestDtoTest {
                 .build();
 
         // when
-        Comment result = createCommentRequestDto.toEntity();
+        Comment result = createCommentRequest.toEntity();
 
         // then
         assertThat(result).usingRecursiveComparison().isEqualTo(expected);

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateCommentRequestDto {
+public class CreateCommentRequest {
 
     @NotBlank(message = "댓글 내용은 공백이 아니어야 합니다.")
     private String content;

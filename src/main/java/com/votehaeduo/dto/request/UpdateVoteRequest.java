@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateVoteRequestDto {
+public class UpdateVoteRequest {
 
     private String title;
     private LocalDate endDate;

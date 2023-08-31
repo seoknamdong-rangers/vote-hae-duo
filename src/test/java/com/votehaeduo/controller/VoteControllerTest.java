@@ -2,9 +2,9 @@ package com.votehaeduo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.votehaeduo.dto.*;
-import com.votehaeduo.dto.request.CreateCommentRequestDto;
-import com.votehaeduo.dto.request.DeleteCommentRequestDto;
-import com.votehaeduo.dto.request.CreateVoteRequestDto;
+import com.votehaeduo.dto.request.CreateCommentRequest;
+import com.votehaeduo.dto.request.DeleteCommentRequest;
+import com.votehaeduo.dto.request.CreateVoteRequest;
 import com.votehaeduo.dto.response.*;
 import com.votehaeduo.dto.request.*;
 import com.votehaeduo.service.VoteService;
@@ -43,6 +43,9 @@ class VoteControllerTest {
     @MockBean
     private VoteService voteService;
 
+    private final LocalDate testStartDate = LocalDate.now();
+    private final LocalDate testEndDate = LocalDate.now().plusDays(3);
+
     @BeforeEach
     void setUp() {
         this.mvc = MockMvcBuilders.standaloneSetup(new VoteController(voteService)).build();
@@ -54,9 +57,9 @@ class VoteControllerTest {
         // given
         CreateVoteResponse expectedVoteResponseDto = new CreateVoteResponse(
                 new VotePayload(1L,
-                        "1월 8일 풋살",
-                        LocalDate.of(2023, 6, 9),
-                        LocalDate.of(2023, 6, 30),
+                        "금주 풋살 투표",
+                        testStartDate,
+                        testEndDate,
                         1L,
                         List.of(new VoteItemPayload(1L, "11시 ~ 1시 실외", Set.of(2L, 3L)),
                                 new VoteItemPayload(2L, "12시 ~ 2시 실내", Set.of(4L, 5L))),
@@ -65,12 +68,12 @@ class VoteControllerTest {
                 "킴대세");
         given(voteService.create(any())).willReturn(expectedVoteResponseDto);
 
-        CreateVoteRequestDto createVoteRequestDto = new CreateVoteRequestDto("1월 8일 풋살",
-                LocalDate.of(2023, 6, 13),
-                LocalDate.of(2023, 6, 30), 1L,
+        CreateVoteRequest createVoteRequest = new CreateVoteRequest("금주 풋살 투표",
+                testStartDate,
+                testEndDate, 1L,
                 List.of(new CreateVoteItem("11시 ~ 1시 실외"),
                         new CreateVoteItem("12시 ~ 2시 실내")));
-        String voteRequestDtoJsonString = objectMapper.writeValueAsString(createVoteRequestDto);
+        String voteRequestDtoJsonString = objectMapper.writeValueAsString(createVoteRequest);
 
         // when & then
         mvc.perform(post("/api/votes")
@@ -78,9 +81,9 @@ class VoteControllerTest {
                         .content(voteRequestDtoJsonString))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.votePayload.id").value(1L))
-                .andExpect(jsonPath("$.votePayload.title").value("1월 8일 풋살"))
-                .andExpect(jsonPath("$.votePayload.startDate").value("2023-06-09"))
-                .andExpect(jsonPath("$.votePayload.endDate").value("2023-06-30"))
+                .andExpect(jsonPath("$.votePayload.title").value("금주 풋살 투표"))
+                .andExpect(jsonPath("$.votePayload.startDate").value(String.valueOf(testStartDate)))
+                .andExpect(jsonPath("$.votePayload.endDate").value(String.valueOf(testEndDate)))
                 .andExpect(jsonPath("$.votePayload.createdMemberId").value(1L))
                 .andExpect(jsonPath("$.votePayload.voteItems.[0].id").value(1L))
                 .andExpect(jsonPath("$.votePayload.voteItems.[0].title").value("11시 ~ 1시 실외"))
@@ -182,11 +185,11 @@ class VoteControllerTest {
                 4L);
         given(voteService.update(any(), any())).willReturn(updateVoteResponse);
 
-        UpdateVoteRequestDto updateVoteRequestDto = new UpdateVoteRequestDto("1월 9일 풋살",
+        UpdateVoteRequest updateVoteRequest = new UpdateVoteRequest("1월 9일 풋살",
                 LocalDate.of(2023, 1, 25),
                 List.of(new VoteItemPayload(1L, "11시 ~ 1시 실외", Set.of(1L, 2L)),
                         new VoteItemPayload(2L, "12시 ~ 2시 실내", Set.of(3L, 4L))));
-        String voteRequestDtoJsonString = objectMapper.writeValueAsString(updateVoteRequestDto);
+        String voteRequestDtoJsonString = objectMapper.writeValueAsString(updateVoteRequest);
 
         // when & then
         mvc.perform(put("/api/votes/1")
@@ -237,8 +240,8 @@ class VoteControllerTest {
 
         given(voteService.voting(any(), any())).willReturn(expectedVotingResponse);
 
-        VotingRequestDto votingRequestDto = new VotingRequestDto(1L, List.of(1L, 2L));
-        String votingRequestDtoJsonString = objectMapper.writeValueAsString(votingRequestDto);
+        VotingRequest votingRequest = new VotingRequest(1L, List.of(1L, 2L));
+        String votingRequestDtoJsonString = objectMapper.writeValueAsString(votingRequest);
 
         // when & then
         mvc.perform(post("/api/votes/1/vote-items")
@@ -275,9 +278,9 @@ class VoteControllerTest {
                 LocalDate.of(2023, 6, 10), "킴대세", 1L);
         given(voteService.createComment(any(), any())).willReturn(expectedCreateCommentResponse);
 
-        CreateCommentRequestDto expectedCreateCommentRequestDto = new CreateCommentRequestDto("재밌겠다",
+        CreateCommentRequest expectedCreateCommentRequest = new CreateCommentRequest("재밌겠다",
                 LocalDate.of(2023, 6, 10), 1L);
-        String createCommentRequestDto = objectMapper.writeValueAsString(expectedCreateCommentRequestDto);
+        String createCommentRequestDto = objectMapper.writeValueAsString(expectedCreateCommentRequest);
 
         // when & then
         mvc.perform(post("/api/votes/1/vote-comments")
@@ -297,8 +300,8 @@ class VoteControllerTest {
         // given
         given(voteService.deleteComment(any(), any(), any())).willReturn(true);
 
-        DeleteCommentRequestDto expectedDeleteCommentRequestDto = new DeleteCommentRequestDto(1L);
-        String deleteCommentRequestDto = objectMapper.writeValueAsString(expectedDeleteCommentRequestDto);
+        DeleteCommentRequest expectedDeleteCommentRequest = new DeleteCommentRequest(1L);
+        String deleteCommentRequestDto = objectMapper.writeValueAsString(expectedDeleteCommentRequest);
 
         // when & then
         mvc.perform(delete("/api/votes/1/comments/1")
@@ -307,6 +310,37 @@ class VoteControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("true"));
+    }
+
+    @Test
+    @DisplayName("팀 매칭")
+    void createTeam() throws Exception {
+        // given
+        TeamPayload teamPayload = TeamPayload.builder()
+                .id(1L)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdMemberId(1L)
+                .voteId(1L)
+                .build();
+        CreateTeamResponse createTeamResponse = new CreateTeamResponse(teamPayload);
+        given(voteService.createTeam(any(), any())).willReturn(createTeamResponse);
+
+        CreateTeamRequest createTeamRequest = CreateTeamRequest.builder()
+                .memberIds(Set.of(1L, 2L, 3L, 4L))
+                .teamCount(2L)
+                .createdMemberId(1L)
+                .build();
+        String voteRequestDtoJsonString = objectMapper.writeValueAsString(createTeamRequest);
+
+        // when & then
+        mvc.perform(post("/api/votes/1/vote-teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(voteRequestDtoJsonString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teamPayload.id").value(1L))
+                .andExpect(jsonPath("$.teamPayload.teamMembers").value(containsInAnyOrder("성준, 성욱", "준성, 영수")))
+                .andExpect(jsonPath("$.teamPayload.createdMemberId").value(1L))
+                .andExpect(jsonPath("$.teamPayload.voteId").value(1L));
     }
 
 }
