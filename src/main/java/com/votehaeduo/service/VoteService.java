@@ -186,4 +186,11 @@ public class VoteService {
         return new CreateTeamResponse(teamPayload);
     }
 
+    // 팀 전체조회
+    @Transactional
+    public FindAllTeamByVoteResponse findAllTeamByVote(Long voteId) {
+        Vote vote = voteRepository.findById(voteId).orElseThrow(VoteNotFoundException::new);
+        return new FindAllTeamByVoteResponse(teamService.findAllTeamByVoteId(vote.getId()));
+    }
+
 }
