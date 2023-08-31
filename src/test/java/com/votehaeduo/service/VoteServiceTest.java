@@ -518,4 +518,36 @@ class VoteServiceTest {
         Assertions.assertThat(createTeamResponse).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
+    @Test
+    @DisplayName("팀 조회")
+    void findAllTeamByVote() {
+        // given
+        Long id = new Random().nextLong();
+        Vote vote = Vote.builder()
+                .id(id)
+                .title("풋살 투표")
+                .startDate(testStartDate)
+                .endDate(testEndDate)
+                .createdMemberId(1L)
+                .build();
+        given(voteRepository.findById(any())).willReturn(Optional.ofNullable(vote));
+        Team team = Team.builder()
+                .id(id)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdDateTime(LocalDateTime.now())
+                .createdMemberId(1L)
+                .voteId(id)
+                .build();
+        List<TeamPayload> teamPayloads = new ArrayList<>();
+        teamPayloads.add(TeamPayload.from(team));
+        given(teamService.findAllTeamByVoteId(any())).willReturn(teamPayloads);
+        FindAllTeamByVoteResponse expectedResult = new FindAllTeamByVoteResponse(teamPayloads);
+
+        // when
+        FindAllTeamByVoteResponse testTeamPayloads = voteService.findAllTeamByVote(id);
+
+        // then
+        Assertions.assertThat(testTeamPayloads).usingRecursiveComparison().isEqualTo(expectedResult);
+    }
+
 }

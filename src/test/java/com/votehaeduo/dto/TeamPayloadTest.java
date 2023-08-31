@@ -9,7 +9,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TeamPayloadTest {
+public class TeamPayloadTest {
 
     @Test
     @DisplayName("TeamPayload from 테스트")

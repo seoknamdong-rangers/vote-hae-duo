@@ -1,7 +1,7 @@
 package com.votehaeduo.service;
 
-import com.votehaeduo.dto.TeamPayload;
 import com.votehaeduo.dto.MemberPayload;
+import com.votehaeduo.dto.TeamPayload;
 import com.votehaeduo.dto.request.CreateTeamRequest;
 import com.votehaeduo.entity.Team;
 import com.votehaeduo.repository.TeamRepository;
@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -23,7 +25,7 @@ public class TeamService {
     // 원하는 팀 수 만큼 인원 나누기
     @Transactional
     public TeamPayload createRandomTeam(Long voteId, List<MemberPayload> memberPayloads,
-                                              CreateTeamRequest createTeamRequest) {
+                                        CreateTeamRequest createTeamRequest) {
         Collections.shuffle(memberPayloads);
         int membersPerTeam = (int) (memberPayloads.size() / createTeamRequest.getTeamCount());
         int remainingMembers = (int) (memberPayloads.size() % createTeamRequest.getTeamCount());
@@ -43,6 +45,13 @@ public class TeamService {
         Team team = Team.of(createTeamRequest.getCreatedMemberId(), voteId, teamMembers);
 
         return TeamPayload.from(teamRepository.save(team));
+    }
+
+    @Transactional
+    public List<TeamPayload> findAllTeamByVoteId(Long voteId) {
+        return teamRepository.findTeamsByVoteIdWithBatchSize(voteId).stream()
+                .map(TeamPayload::from)
+                .collect(Collectors.toList());
     }
 
 }

@@ -80,4 +80,10 @@ public class VoteController {
         return voteService.createTeam(voteId, createTeamRequest);
     }
 
+    // 팀 조회
+    @GetMapping("/{voteId}/vote-teams")
+    public FindAllTeamByVoteResponse findAllTeamByVote(@PathVariable("voteId") Long voteId) {
+        return voteService.findAllTeamByVote(voteId);
+    }
+
 }

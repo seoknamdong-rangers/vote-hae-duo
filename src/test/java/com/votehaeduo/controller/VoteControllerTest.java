@@ -1,5 +1,7 @@
 package com.votehaeduo.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.votehaeduo.dto.*;
 import com.votehaeduo.dto.request.CreateCommentRequest;
@@ -7,6 +9,7 @@ import com.votehaeduo.dto.request.DeleteCommentRequest;
 import com.votehaeduo.dto.request.CreateVoteRequest;
 import com.votehaeduo.dto.response.*;
 import com.votehaeduo.dto.request.*;
+import com.votehaeduo.entity.Team;
 import com.votehaeduo.service.VoteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,9 +20,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
@@ -341,6 +349,35 @@ class VoteControllerTest {
                 .andExpect(jsonPath("$.teamPayload.teamMembers").value(containsInAnyOrder("성준, 성욱", "준성, 영수")))
                 .andExpect(jsonPath("$.teamPayload.createdMemberId").value(1L))
                 .andExpect(jsonPath("$.teamPayload.voteId").value(1L));
+    }
+
+    @Test
+    @DisplayName("팀 조회")
+    void findAllTeamByVote() throws Exception {
+        // given
+        Team team = Team.builder()
+                .id(1L)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdDateTime(LocalDateTime.of(2023, 8, 24, 23,00,00))
+                .createdMemberId(1L)
+                .voteId(1L)
+                .build();
+        List<TeamPayload> teamPayloads = new ArrayList<>();
+        teamPayloads.add(TeamPayload.from(team));
+        FindAllTeamByVoteResponse findAllTeamByVoteResponse = new FindAllTeamByVoteResponse(teamPayloads);
+        given(voteService.findAllTeamByVote(any())).willReturn(findAllTeamByVoteResponse);
+        String voteRequestDtoJsonString = objectMapper.writeValueAsString(findAllTeamByVoteResponse);
+
+        // when & then
+        mvc.perform(get("/api/votes/1/vote-teams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(voteRequestDtoJsonString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.teams.[0].id").value(1L))
+                .andExpect(jsonPath("$.teams.[0].teamMembers").value(containsInAnyOrder("성준, 성욱", "준성, 영수")))
+                .andExpect(jsonPath("$.teams.[0].createdMemberId").value(1L))
+                .andExpect(jsonPath("$.teams.[0].createdDateTime").value("2023-08-24T23:00:00"))
+                .andExpect(jsonPath("$.teams.[0].voteId").value(1L));
     }
 
 }
