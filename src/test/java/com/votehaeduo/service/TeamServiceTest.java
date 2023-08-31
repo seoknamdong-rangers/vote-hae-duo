@@ -68,4 +68,35 @@ class TeamServiceTest {
         Assertions.assertThat(teamPayload).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
+    @Test
+    @DisplayName("팀 조회")
+    void findAllTeamByVoteId() {
+        // given
+        LocalDateTime localDateTimeTest = LocalDateTime.now();
+        Team team = Team.builder()
+                .createdDateTime(localDateTimeTest)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdMemberId(1L)
+                .voteId(1L)
+                .build();
+        List<Team> teams = new ArrayList<>();
+        teams.add(team);
+        given(teamRepository.findTeamsByVoteIdWithBatchSize(any())).willReturn(teams);
+
+        TeamPayload expectedResult = TeamPayload.builder()
+                .createdDateTime(localDateTimeTest)
+                .teamMembers(Set.of("성준, 성욱", "준성, 영수"))
+                .createdMemberId(1L)
+                .voteId(1L)
+                .build();
+        List<TeamPayload> expectedResults = new ArrayList<>();
+        expectedResults.add(expectedResult);
+
+        // when
+        List<TeamPayload> teamPayloads = teamService.findAllTeamByVoteId(1L);
+
+        // then
+        Assertions.assertThat(teamPayloads).usingRecursiveComparison().isEqualTo(expectedResults);
+    }
+
 }
