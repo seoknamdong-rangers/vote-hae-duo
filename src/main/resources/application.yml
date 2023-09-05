@@ -61,9 +61,9 @@ spring:
       on-profile: prod
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://votehaeduodb.cjopywzdjxoo.ap-northeast-2.rds.amazonaws.com:3306/VoteHaeDuo?useUnicode=true&characterEncoding=utf8
-    username: Jun
-    password: 99383879
+    url: jdbc:mariadb://votehaeduo-mariadb.cmv6a3f2cxz8.ap-northeast-2.rds.amazonaws.com:3306/votehaeduo-mariadb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: tjrskaehd
   jpa:
     properties:
       hibernate:
